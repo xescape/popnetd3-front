@@ -29,13 +29,13 @@
  */
 
 //TODO: User defined variables
-var input = "http://calyptospora:3000/data.json";
+var input = "http://calyptospora:3000/data3.json";
 
 //TODO: init the svg element
 
 //define size of the image element
-var base_width = 1200,
-	base_height = 1200,
+var base_width = 3200,
+	base_height = 1800,
 	width = base_width,
 	height = base_height,
 	margin = 100,
@@ -53,7 +53,7 @@ var labelAttrs = {
 
 var edgeAttrs = {
 	"stroke": 'black',
-	'stroke-width': function(d){return d.width / 10}
+	'stroke-width': function(d){return d.width / 3}
 }
 
 var invisEdgeAttrs = {
