@@ -13,20 +13,23 @@ var data = null
 var settings = null
 var settingspath = 'settings.json'
 var bodyParser = require("body-parser")
-var reload = True
+var reload = false
 
 router.use(bodyParser.urlencoded({extended: false}))
 router.use(bodyParser.json())
 
 makeDefaultSettings(settingspath)
 router.get('/:file/:id.png', getPainting);
-router.post('/settings')
+router.post('/settings', changeSettings)
 console.log('initiated once')
 
 
 function changeSettings(req, res){
-	settings = req.body.settings
-	reload = True
+	console.log('changed settings!')
+	settings = JSON.parse(req.body.settings)
+//	console.log(req.body)
+	reload = true
+	res.send('settings complete!')
 }
 
 function getPainting(req, res){
@@ -41,8 +44,13 @@ function getPainting(req, res){
 		fs.mkdirSync(dir)
 	}
 	else{
-		fs.removeSync(dir)
-		fs.mkdirSync(dir)
+		if(reload){
+			console.log('clearing ' + dir)
+			fs.removeSync(dir)
+			fs.mkdirSync(dir)
+			reload = false
+		}
+
 	}
 	
 	var path = './' + params['file'] + '.json'
@@ -88,11 +96,11 @@ function paintChr(node, colorTable, outpath){
 	var scale = settings.scale
 	
 	svg = d3n.createSVG()
-			.attr("width", nodeRadius * 2.2)
-			.attr("height", nodeRadius * 2.2 + settings.labelAttrs.y)
+			.attr("width", nodeRadius * 2 + 40 * scale)
+			.attr("height", nodeRadius * 2 + 40 * scale + settings.labelAttrs.y)
 			.attr("name", node.name)
 			.append("g")
-				.attr("transform", "translate(" + (nodeRadius * 1.1) + "," + (nodeRadius * 1.1)  + ")");
+				.attr("transform", "translate(" + (nodeRadius + 20 * scale) + "," + (nodeRadius + 20 * scale)  + ")");
 	
 	var	arc = d3.arc()
 		.outerRadius(nodeRadius - 10)
@@ -136,7 +144,7 @@ function makeDefaultSettings(path){
 		bandWidth : bandWidth,
 		scale : scale,
 		borderAttrs : {
-			'r' : nodeRadius,
+			'r' : nodeRadius + 5 * scale,
 			"stroke-width": 5 * scale,
 			'fill': "white",
 			"fill-opacity": 100

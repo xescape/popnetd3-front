@@ -30,7 +30,7 @@
 
 //TODO: User defined variables
 var url = "http://calyptospora:3000"
-var input = url + "/data4.json";
+var input = url + "/data3.json";
 
 //TODO: init the svg element
 
@@ -41,13 +41,13 @@ var base_width = 4800,
 	height = base_height,
 	margin = 100,
 	scale = 5,
-	nodeRadius = 50 * scale,
-	bandWidth = 25 * scale
+	nodeRadius = 50,
+	bandWidth = 25
 	
 
 var labelAttrs = {
 	'x' : 0,
-	'y' : nodeRadius + 20 * scale, //offsize same as fontsize?
+	'y' : (nodeRadius + 20) * scale, //offsize same as fontsize?
 	'font-size': 14 * scale,
 	'font-family': 'Arial',
 	'text-anchor': 'middle',
@@ -65,7 +65,7 @@ var invisEdgeAttrs = {
 	}
 
 var borderAttrs = {
-	'r' : nodeRadius,
+	'r' : (nodeRadius + 5) * scale,
 	"stroke-width": 5 * scale,
 	'fill': "white",
 	"fill-opacity": 100
@@ -94,14 +94,15 @@ container.append("rect")
 //TODO: Add the control elements that let you upload a file
 
 var settings = {
-		nodeRadius: nodeRadius,
-		bandWidth: bandWidth,
+		nodeRadius: nodeRadius * scale,
+		bandWidth: bandWidth * scale,
 		scale: scale,
 		labelAttrs: labelAttrs,
 		borderAttrs: borderAttrs
 }
 
-$.post(url + '/c/settings', {settings: settings}, function(data){
+$.post(url + '/c/settings', {settings: JSON.stringify(settings)}, function(data){
+	console.log(data)
 	d3.json(input, draw)
 })
 	
@@ -120,7 +121,7 @@ function draw(data){
 		centerStrength = 10,
 		fast = 0.3,
 		slow = 0.9,
-		scale = 1,
+//		scale = 1,
 		dx = 0,
 		dy = 0;
 	
@@ -211,7 +212,7 @@ function draw(data){
 
 	
 	
-	console.log('beep')
+//	console.log('beep')
 //	console.log(simulation.nodes().filter(function(d){
 //		return d.group === true;
 //	}));
@@ -359,14 +360,14 @@ function draw(data){
 	
 	function zoomed(d){
 		container.attr("transform", d3.event.transform);
-		scale = d3.event.transform.k
+		var scale = d3.event.transform.k
 		dx = d3.event.transform.x
 		dy = d3.event.transform.y
 //		width = base_width / scale
 //		height = base_height / scale
 		
 //		console.log('dx ' + dx + '\ndy '+ dy + "\nw " + width + "\nh " + height + "\ns " + scale)
-		console.log(simulation.nodes()[0].x)
+//		console.log(simulation.nodes()[0].x)
 
 	}
 	
@@ -376,12 +377,13 @@ function draw(data){
 		var e = document.createElementNS("http://www.w3.org/2000/svg", "svg")
 		
 		var svg = d3.select(e)
-		.attr("width", nodeRadius * 2.2)
-		.attr("height", nodeRadius * 2.2 + labelAttrs.y)
+		.attr("width", nodeRadius * 2 + 40 * scale)
+		.attr("height", nodeRadius * 2 + 40 * scale + labelAttrs.y)
 		.attr("name", node.name)
 		svg.append("image")
 			.attr("xlink:href", "./c/" + file + "/" + node.name + ".png")
-			.attr("transform", "scale(0.2)");
+			.attr("transform", "scale(" + 1 / scale + ")");
+		console.log(scale)
 //		
 //		var label = svg.append("svg:text")
 //			.text(node.name)		
@@ -562,8 +564,8 @@ function draw(data){
 			var r = Math.max(n * (nodeRadius + 20) / (2 * Math.PI), 2 * (nodeRadius + 20))
 			return _.range(n).map(function(i){
 				return {
-					x: g.x + r * Math.cos(2 * Math.PI * i / n) - nodeRadius,
-					y: g.y + r * Math.sin(2 * Math.PI * i / n) - nodeRadius
+					x: g.x + r * Math.cos(2 * Math.PI * i / n) - nodeRadius - 10,
+					y: g.y + r * Math.sin(2 * Math.PI * i / n) - nodeRadius - 10
 				}
 			})	
 		}
