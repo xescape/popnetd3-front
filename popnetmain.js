@@ -29,23 +29,26 @@
  */
 
 //TODO: User defined variables
-var input = "http://calyptospora:3000/data3.json";
+var url = "http://calyptospora:3000"
+var input = url + "/data4.json";
 
 //TODO: init the svg element
 
 //define size of the image element
-var base_width = 3200,
-	base_height = 1800,
+var base_width = 4800,
+	base_height = 2700,
 	width = base_width,
 	height = base_height,
 	margin = 100,
-	nodeRadius = 50,
-	bandWidth = 25
+	scale = 5,
+	nodeRadius = 50 * scale,
+	bandWidth = 25 * scale
+	
 
 var labelAttrs = {
 	'x' : 0,
-	'y' : nodeRadius + 20, //offsize same as fontsize?
-	'font-size': 20,
+	'y' : nodeRadius + 20 * scale, //offsize same as fontsize?
+	'font-size': 14 * scale,
 	'font-family': 'Arial',
 	'text-anchor': 'middle',
 	'class': 'nodetext'
@@ -63,7 +66,7 @@ var invisEdgeAttrs = {
 
 var borderAttrs = {
 	'r' : nodeRadius,
-	"stroke-width": 5,
+	"stroke-width": 5 * scale,
 	'fill': "white",
 	"fill-opacity": 100
 }
@@ -90,9 +93,23 @@ container.append("rect")
 
 //TODO: Add the control elements that let you upload a file
 
-//TODO: load graph data
-d3.json(input, function(data){
+var settings = {
+		nodeRadius: nodeRadius,
+		bandWidth: bandWidth,
+		scale: scale,
+		labelAttrs: labelAttrs,
+		borderAttrs: borderAttrs
+}
 
+$.post(url + '/c/settings', {settings: settings}, function(data){
+	d3.json(input, draw)
+})
+	
+//TODO: load graph data
+
+
+function draw(data){
+	
 	//Simulation variables
 	var colorTable = data.colorTable;
 		baseLinkStrength = 0.0002,
@@ -110,8 +127,8 @@ d3.json(input, function(data){
 	//bind forces
 	var simulation = d3.forceSimulation()
 		.force("link", d3.forceLink().id(function(d) { return d.name; }).strength(0))
-		.force("charge", d3.forceManyBody().strength(0))
-		.force("collide",d3.forceCollide( function(d){return nodeRadius + 10 }).iterations(5))
+//		.force("charge", d3.forceManyBody().strength(0))
+		.force("collide",d3.forceCollide( function(d){return nodeRadius }).iterations(1))
 //		.force("center", d3.forceCenter(width / 2, height / 2));
 //		.force("y", d3.forceY(width/3))
 //	    .force("x", d3.forceX(height/3))
@@ -125,9 +142,9 @@ d3.json(input, function(data){
 		.on("end", dragEnd);	
 	
 	var groupDrag = d3.drag()
-		.on("start", dragStart)
+		.on("start", dragStartGroup)
 		.on("drag", draggedGroup)
-		.on("end", dragEnd);
+		.on("end", dragEndGroup);
 	
 	var zoom = d3.zoom()
 				.scaleExtent([0.1,10])
@@ -177,7 +194,7 @@ d3.json(input, function(data){
 
 	nodes
 		.call(drag)
-		.append(function(d){return paintChr(d);});
+		.append(function(d){return getChr(d);});
 	
 	//bind nodes and edges	
 	simulation.nodes(data.nodes)
@@ -215,38 +232,104 @@ d3.json(input, function(data){
 			simulation.alpha(0.3).restart();
 			d.fx = d.x;
 			d.fy = d.y;	
+			
+			d.tx = d.x;
+			d.ty = d.y;
+
+			container.append('circle')
+				.attr("class", "temp")
+				.attr("fill", "none")
+				.attr("r", nodeRadius)
+				.attr("stroke", "gray")
+				.attr("stroke-width", '5')
+				.attr("cx", d.tx + nodeRadius)
+				.attr("cy", d.ty + nodeRadius)
 		}
 	}
 	
 	function dragged(d){
 		simulation.alpha(0.2)
-		d.fx = boundx(d.fx + d3.event.dx);
-		d.fy = boundy(d.fy + d3.event.dy);
+		d.tx = boundx(d.tx + d3.event.dx);
+		d.ty = boundy(d.ty + d3.event.dy);
+		
+		d3.selectAll(".temp")
+			.attr("cx", d3.event.x + nodeRadius)
+			.attr("cy", d3.event.y + nodeRadius)
 	}
 	
 	function dragEnd(d){
 		if (!d3.event.active){
 			linkOn = false;
 			simulation.alpha(0.1)
-				.force('link').strength(0);
+//				.force('link').strength(0);
 			
-			simulation.force('charge').strength(0);
+//			simulation.force('charge').strength(0);
 			
-			groupCircle(false);
 			
+			
+			d.x = d.tx;
+			d.y = d.ty;
+			
+			d.fx = null;
+			d.fy = null;
+			
+			d3.selectAll(".temp").remove()
+//			groupCircle(false);
+		}
+	}
+	
+	function dragStartGroup(d){
+		d3.event.sourceEvent.stopPropagation();
+		if (!d3.event.active){
+			
+			if(!linkOn){
+				linkOn = true;
+//				simulation.force('link').strength(function(d){return baseLinkStrength * d.width;});
+//				simulation.force('charge').strength(baseChargeStrength)
+				console.log('link on')
+			}
+			
+			simulation.alpha(0.3).restart();
+			d.fx = d.x;
+			d.fy = d.y;	
+			
+			d.tx = d.x;
+			d.ty = d.y;
+		}
+	}
+	
+	function draggedGroup(d){
+		
+		simulation.alpha(0.2)
+//		d.tx = boundx(d.tx + d3.event.dx);
+//		d.ty = boundy(d.ty + d3.event.dy);
+		
+		d.fx = boundx(d.fx + d3.event.dx);
+		d.fy = boundy(d.fy + d3.event.dy);
+		
+		d3.select('.temp')
+			.attr("cx", d3.event.x + nodeRadius)
+			.attr("cy", d3.event.y + nodeRadius)
+
+	}
+	
+	function dragEndGroup(d){
+		if (!d3.event.active){
+			linkOn = false;
+			simulation.alpha(0.1)
+//				.force('link').strength(0);
+			
+//			simulation.force('charge').strength(0);
+
 			d.x = d.fx;
 			d.y = d.fy;
 			
 			d.fx = null;
 			d.fy = null;
+			
+			d3.selectAll(".temp").remove()
+			groupCircle(false);
 		}
-	}
-	
-	function draggedGroup(d){
-		d.fx += d3.event.dx;
-		d.fy += d3.event.dy;
-		groupCircle(false);
-
 	}
 	
 	function boundx(i){ //keeps nodes in the boundaries
@@ -287,6 +370,26 @@ d3.json(input, function(data){
 
 	}
 	
+	function getChr(node){
+		
+		var file = input.match(/[/](\w+?).json/)[1]
+		var e = document.createElementNS("http://www.w3.org/2000/svg", "svg")
+		
+		var svg = d3.select(e)
+		.attr("width", nodeRadius * 2.2)
+		.attr("height", nodeRadius * 2.2 + labelAttrs.y)
+		.attr("name", node.name)
+		svg.append("image")
+			.attr("xlink:href", "./c/" + file + "/" + node.name + ".png")
+			.attr("transform", "scale(0.2)");
+//		
+//		var label = svg.append("svg:text")
+//			.text(node.name)		
+//		attachAttr(label, labelAttrs)
+//	
+		return e
+		
+	}
 	
 	//TODO: load chromosome painting data
 	//data should be like {name: name, ids: [id], lengths: [lengths]}
@@ -354,8 +457,8 @@ d3.json(input, function(data){
 //		simulation.velocityDecay(fast);
 		
 		var t = d3.timeout(function(){
-			simulation.force("link").strength(0);
-			simulation.force("charge").strength(0);
+//			simulation.force("link").strength(0);
+//			simulation.force("charge").strength(0);
 			simulation.velocityDecay(slow);
 			simulation.alpha(0);
 		}, 1)
@@ -527,7 +630,7 @@ d3.json(input, function(data){
 	
 
 
-});
+}
 
 
 
