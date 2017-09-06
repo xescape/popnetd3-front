@@ -517,7 +517,7 @@ function draw(data){
 				.call(groupDrag);
 		
 		s.append('circle')
-			.attr('stroke', 'black')
+			.attr('fill', function(d){return colorTable[d.name]})
 			.attr('r', 20);
 	
 		sim.nodes(data.nodes.concat(gnodes));
