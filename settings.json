@@ -1,1 +1,1 @@
-{"nodeRadius":250,"bandWidth":100,"scale":5,"borderAttrs":{"r":275,"stroke-width":25,"fill":"white","fill-opacity":100},"labelAttrs":{"x":0,"y":350,"font-size":"70pt","font-family":"Arial","text-anchor":"middle","class":"nodetext","scale":5}}
+{"nodeRadius":125,"bandWidth":50,"scale":5,"borderAttrs":{"r":150,"stroke-width":25,"fill":"white","fill-opacity":100},"labelAttrs":{"x":0,"y":225,"font-size":"70pt","font-family":"Arial","text-anchor":"middle","class":"nodetext","scale":5}}

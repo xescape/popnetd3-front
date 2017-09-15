@@ -94,13 +94,14 @@ function paintChr(node, colorTable, outpath){
 
 	var nodeRadius = settings.nodeRadius
 	var scale = settings.scale
+	var borderWidth = settings.borderAttrs["stroke-width"]
 	
 	svg = d3n.createSVG()
-			.attr("width", nodeRadius * 2 + 40 * scale)
-			.attr("height", nodeRadius * 2 + 40 * scale + settings.labelAttrs.y)
+			.attr("width", (nodeRadius + borderWidth * 2) * 2)
+			.attr("height", (nodeRadius + borderWidth * 2) * 2 + settings.labelAttrs.y)
 			.attr("name", node.name)
 			.append("g")
-				.attr("transform", "translate(" + (nodeRadius + 20 * scale) + "," + (nodeRadius + 20 * scale)  + ")");
+				.attr("transform", "translate(" + (nodeRadius + borderWidth * 2) + "," + (nodeRadius + borderWidth * 2)  + ")");
 	
 	var	arc = d3.arc()
 		.outerRadius(nodeRadius - 10)
@@ -136,8 +137,8 @@ function paintChr(node, colorTable, outpath){
 function makeDefaultSettings(path){
 	
 	var scale = 5
-	var nodeRadius = 50 * scale
-	var bandWidth = 20 * scale
+	var nodeRadius = 25 * scale
+	var bandWidth = 10 * scale
 	
 	var settings = {
 		nodeRadius : nodeRadius,

@@ -35,20 +35,20 @@ var input = url + "/data3.json";
 //TODO: init the svg element
 
 //define size of the image element
-var base_width = 4800,
-	base_height = 2700,
+var base_width = 1200,
+	base_height = 720,
 	width = base_width,
 	height = base_height,
 	margin = 100,
 	scale = 5,
-	nodeRadius = 50,
-	bandWidth = 25
+	nodeRadius = 25,
+	bandWidth = 10
 	
 
 var labelAttrs = {
 	'x' : 0,
 	'y' : (nodeRadius + 20) * scale, //offsize same as fontsize?
-	'font-size': 14 * scale,
+	'font-size': 11 * scale,
 	'font-family': 'Arial',
 	'text-anchor': 'middle',
 	'class': 'nodetext'
@@ -75,21 +75,8 @@ var borderAttrs = {
 var svg = d3.select("#graph").append("svg")
 				.attr("width", width)
 				.attr("height", height)
-				.attr("style", 'border: 1px solid black;');
-
-svg.append("rect")
-	.attr("width", width)
-	.attr("height", height)
-	.attr("fill", "gray")
-//	.attr("transform", "translate(" + -1 * width / 4 + ',' + -1 * height / 4 + ")");
-
-
-var container = svg.append("g");
-
-container.append("rect")
-	.attr("width", width)
-	.attr("height", height)
-	.attr("fill", "white")
+				.attr("id", "popnet");
+//				.attr("style", 'border: 1px solid black;');
 
 //TODO: Add the control elements that let you upload a file
 
@@ -101,8 +88,15 @@ var settings = {
 		borderAttrs: borderAttrs
 }
 
+//listeners
+document.getElementById("button-reset").addEventListener("click", function(){
+	svg.html("")
+	d3.json(input, draw)
+})
+
+document.getElementById("button-save").addEventListener("click", save, false);
+
 $.post(url + '/c/settings', {settings: JSON.stringify(settings)}, function(data){
-	console.log(data)
 	d3.json(input, draw)
 })
 	
@@ -121,6 +115,7 @@ function draw(data){
 		centerStrength = 10,
 		fast = 0.3,
 		slow = 0.9,
+		borderWidth = settings.borderAttrs['stroke-width'] / settings.scale,
 //		scale = 1,
 		dx = 0,
 		dy = 0;
@@ -158,10 +153,10 @@ function draw(data){
 				d.y = boundy(d.y)
 			})
 		
-			edges.attr("x1", function(d){return d.source.x + nodeRadius;})
-				.attr("y1", function(d){return d.source.y + nodeRadius;})
-				.attr("x2", function(d){return d.target.x + nodeRadius;})
-				.attr("y2", function(d){return d.target.y + nodeRadius;})
+			edges.attr("x1", function(d){return d.source.x + nodeRadius + borderWidth;})
+				.attr("y1", function(d){return d.source.y + nodeRadius + borderWidth * 1.5;})
+				.attr("x2", function(d){return d.target.x + nodeRadius + borderWidth;})
+				.attr("y2", function(d){return d.target.y + nodeRadius + + borderWidth * 1.5;})
 				
 			nodes.attr("transform", function(d){
 				return "translate(" + d.x + "," + d.y + ")"});
@@ -172,11 +167,24 @@ function draw(data){
 			
 			d3.selectAll('.glink').attr("x1", function(d){return d.source.x;})
 			.attr("y1", function(d){return d.source.y;})
-			.attr("x2", function(d){return d.target.x + nodeRadius;})
-			.attr("y2", function(d){return d.target.y + nodeRadius;})
+			.attr("x2", function(d){return d.target.x + nodeRadius + borderWidth;})
+			.attr("y2", function(d){return d.target.y + nodeRadius + borderWidth;})
 	});
 	
 	//construct nodes and edges
+	svg.append("rect")
+	.attr("width", width)
+	.attr("height", height)
+	.attr("fill", "gray")
+//	.attr("transform", "translate(" + -1 * width / 4 + ',' + -1 * height / 4 + ")");
+	
+	var container = svg.append("g");
+	
+	container.append("rect")
+	.attr("width", width)
+	.attr("height", height)
+	.attr("fill", "white")
+	
 	var edges = container.append("g")
 	.attr("class", "link")
 		.selectAll(".link")
@@ -218,6 +226,11 @@ function draw(data){
 //	}));
 //	d3.selectAll('.glink').each(function(d){console.log(d)})
 	
+//	document.getElementById("button-save").addEventListener("click", function(){
+//		alert('saved!')
+//	})
+	
+	
 	
 	function dragStart(d){
 		d3.event.sourceEvent.stopPropagation();
@@ -243,8 +256,8 @@ function draw(data){
 				.attr("r", nodeRadius)
 				.attr("stroke", "gray")
 				.attr("stroke-width", '5')
-				.attr("cx", d.tx + nodeRadius)
-				.attr("cy", d.ty + nodeRadius)
+				.attr("cx", d.tx + nodeRadius + borderWidth * 2)
+				.attr("cy", d.ty + nodeRadius + borderWidth * 2)
 		}
 	}
 	
@@ -254,8 +267,8 @@ function draw(data){
 		d.ty = boundy(d.ty + d3.event.dy);
 		
 		d3.selectAll(".temp")
-			.attr("cx", d3.event.x + nodeRadius)
-			.attr("cy", d3.event.y + nodeRadius)
+			.attr("cx", d3.event.x + nodeRadius + borderWidth * 2)
+			.attr("cy", d3.event.y + nodeRadius + borderWidth * 2)
 	}
 	
 	function dragEnd(d){
@@ -263,11 +276,7 @@ function draw(data){
 			linkOn = false;
 			simulation.alpha(0.1)
 //				.force('link').strength(0);
-			
 //			simulation.force('charge').strength(0);
-			
-			
-			
 			d.x = d.tx;
 			d.y = d.ty;
 			
@@ -309,8 +318,8 @@ function draw(data){
 		d.fy = boundy(d.fy + d3.event.dy);
 		
 		d3.select('.temp')
-			.attr("cx", d3.event.x + nodeRadius)
-			.attr("cy", d3.event.y + nodeRadius)
+			.attr("cx", d3.event.x + nodeRadius + borderWidth * 2)
+			.attr("cy", d3.event.y + nodeRadius + borderWidth * 2)
 
 	}
 	
@@ -375,15 +384,15 @@ function draw(data){
 		
 		var file = input.match(/[/](\w+?).json/)[1]
 		var e = document.createElementNS("http://www.w3.org/2000/svg", "svg")
-		
 		var svg = d3.select(e)
-		.attr("width", nodeRadius * 2 + 40 * scale)
-		.attr("height", nodeRadius * 2 + 40 * scale + labelAttrs.y)
+//		.attr("width", nodeRadius * 2 + borderWidth * 4)
+//		.attr("height", nodeRadius * 2 + borderWidth * 4 + labelAttrs.y)
 		.attr("name", node.name)
 		svg.append("image")
 			.attr("xlink:href", "./c/" + file + "/" + node.name + ".png")
+			.attr("height", (nodeRadius * 2 + borderWidth * 4) * settings.scale + labelAttrs.y)
+			.attr("width", (nodeRadius * 2 + borderWidth * 4) * settings.scale)
 			.attr("transform", "scale(" + 1 / scale + ")");
-		console.log(scale)
 //		
 //		var label = svg.append("svg:text")
 //			.text(node.name)		
@@ -518,7 +527,7 @@ function draw(data){
 		
 		s.append('circle')
 			.attr('fill', function(d){return colorTable[d.name]})
-			.attr('r', 20);
+			.attr('r', 10);
 	
 		sim.nodes(data.nodes.concat(gnodes));
 		
@@ -592,13 +601,15 @@ function draw(data){
 			var x = Math.ceil(Math.sqrt(n)) - 1,
 				ls = [],
 				c = 0;
-				step = Math.ceil(width / n)
-				start = Math.ceil(step / 2)
-			
+				xstep = Math.ceil(width / Math.ceil(Math.sqrt(n))),
+				xstart = Math.ceil(xstep / 2),
+				ystep = Math.ceil(height / Math.ceil(Math.sqrt(n))),
+				ystart = Math.ceil(ystep/2);
+				
 			for( var i = 0; i <= x; i++){
 				for( var j = 0; j <= x; j++){
 					if(c >= n) break;
-					ls.push([start + step * i, start + step * j]);
+					ls.push([xstart + xstep * i, ystart + ystep * j]);
 					c++;
 				}
 				if(c >= n) break;
@@ -633,6 +644,66 @@ function draw(data){
 
 
 }
+
+function save(){
+    // Select the first svg element
+    var thissvg = document.getElementById("popnet"),
+    	img = new Image(),
+        serializer = new XMLSerializer(),
+        svgStr = serializer.serializeToString(thissvg),
+		svgBlob = new Blob([svgStr], {type: 'image/svg+xml;charset=utf-8'}),
+		DOMURL = window.URL || windows.webkitURL || window,
+		url = DOMURL.createObjectURL(svgBlob),
+		canvas = document.createElement("canvas");
+    
+    document.body.appendChild(canvas);
+    canvas.width = width;
+    canvas.height = height;
+    
+    var ctx = canvas.getContext("2d")
+
+	img.onload = function () {
+    	ctx.drawImage(img, 0, 0);
+    	DOMURL.revokeObjectURL(url);
+
+	    var imgURI = canvas
+	        .toDataURL('image/png')
+	        .replace('image/png', 'image/octet-stream');
+	    
+	    triggerDownload(imgURI);
+    }
+    
+	img.src = url
+}
+
+function triggerDownload(imgURI){
+    var evt = new MouseEvent('click', {
+        view: window,
+        bubbles: false,
+        cancelable: true
+      });
+
+	var a = document.getElementById('dl');
+	a.setAttribute('download', 'popnet.png');
+	a.setAttribute('href', imgURI);
+	a.setAttribute('target', '_blank');
+	
+	a.dispatchEvent(evt);
+}    
+    // You could also use the actual string without base64 encoding it:
+    //img.src = "data:image/svg+xml;utf8," + svgStr;
+
+    
+//    // Now save as png
+//    
+//    var dt = canvas.toDataURL('image/png');
+//    /* Change MIME type to trick the browser to downlaod the file instead of displaying it */
+//    dt = dt.replace(/^data:image\/[^;]*/, 'data:application/octet-stream');
+//    /* In addition to <a>'s "download" attribute, you can define HTTP-style headers */
+////    dt = dt.replace(/^data:application\/octet-stream/, 'data:application/octet-stream;headers=Content-Disposition%3A%20attachment%3B%20filename=popnet.png');
+//    location.href = dt;
+//    console.log(dt)
+
 
 
 

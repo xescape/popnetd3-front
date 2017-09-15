@@ -6,9 +6,57 @@
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src='lodash.js'></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+<link rel=stylesheet href="https://s3-us-west-2.amazonaws.com/colors-css/2.2.0/colors.min.css">
+<link rel="stylesheet" href="index.css">
+<script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+<script src="/node_modules/markdown/lib/markdown.js"></script>
 </head>
 <body>
-<div id="graph"></div>
-</body>
+<!-- Always shows a header, even in smaller screens. -->
+<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+  <header class="mdl-layout__header">
+    <div class="mdl-layout__header-row">
+      <!-- Title -->
+      <span class="mdl-layout-title">PopNet</span>
+      <!-- Add spacer, to align navigation to the right -->
+      <div class="mdl-layout-spacer"></div>
+      <!-- Navigation. We hide it in small screens. -->
+      <nav class="mdl-navigation mdl-layout--large-screen-only">
+        <a class="mdl-navigation__link" href="http://www.compsysbio.org">compsysbio.org</a>
+      </nav>
+    </div>
+  </header>
+  <div class="mdl-layout__drawer">
+  <!--  make one of these two invisible at all times. -->
+    <div class="mdl-card" id="menu">
+	    <span class="mdl-layout-title" id="ins1">
+    	</span>
+    </div>
+  </div>
+  <main class="mdl-layout__content" id="container">
+  	<div class="mdl-card mdl-shadow--2dp" id="viewport">
+	    <div class="page-content" id="graph"></div>
+	    <div class="page-content" id="bar">
+
+    		<button class="mdl-button mdl-js-button mdl-button--icon" id="button-save">
+ 					<i class="material-icons">save</i>
+ 					<a id='dl' download='popnet.png'></a>
+			</button>
+
+	    	<button class="mdl-button mdl-js-button mdl-button--icon" id="button-reset">
+  				<i class="material-icons">refresh</i>
+			</button>
+	    	<button class="mdl-button mdl-js-button mdl-button--icon" id="button-force">
+  				<i class="material-icons">play_circle_outline</i>
+			</button>
+	    </div>
+  	</div>
+  	
+  </main>
+</div>
 <script src="popnetmain.js"></script>
+<script src="helper.js"></script>
+</body>
 </html>
