@@ -60,8 +60,7 @@ var edgeAttrs = {
 }
 
 var invisEdgeAttrs = {
-		"stroke": 'black',
-		'stroke-width': 0
+	'stroke-width': 0
 	}
 
 var borderAttrs = {
@@ -75,8 +74,15 @@ var borderAttrs = {
 var svg = d3.select("#graph").append("svg")
 				.attr("width", width)
 				.attr("height", height)
-				.attr("id", "popnet");
-//				.attr("style", 'border: 1px solid black;');
+				.attr("id", "popnet_container")
+	svg.append("rect")
+		.attr("width", width)
+		.attr("height", height)
+		.attr("fill", "gray")
+					
+	svg = svg.append("svg")
+			 .attr("id", 'popnet')
+//			   .attr("style", 'border: 1px solid black;');
 
 //TODO: Add the control elements that let you upload a file
 
@@ -172,10 +178,6 @@ function draw(data){
 	});
 	
 	//construct nodes and edges
-	svg.append("rect")
-	.attr("width", width)
-	.attr("height", height)
-	.attr("fill", "gray")
 //	.attr("transform", "translate(" + -1 * width / 4 + ',' + -1 * height / 4 + ")");
 	
 	var container = svg.append("g");
@@ -184,6 +186,7 @@ function draw(data){
 	.attr("width", width)
 	.attr("height", height)
 	.attr("fill", "white")
+//	.attr("id", "viewport")
 	
 	var edges = container.append("g")
 	.attr("class", "link")
@@ -385,20 +388,39 @@ function draw(data){
 		var file = input.match(/[/](\w+?).json/)[1]
 		var e = document.createElementNS("http://www.w3.org/2000/svg", "svg")
 		var svg = d3.select(e)
-//		.attr("width", nodeRadius * 2 + borderWidth * 4)
-//		.attr("height", nodeRadius * 2 + borderWidth * 4 + labelAttrs.y)
-		.attr("name", node.name)
-		svg.append("image")
-			.attr("xlink:href", "./c/" + file + "/" + node.name + ".png")
+					.attr("name", node.name)
+		var path = "./c/" + file + "/" + node.name + ".png"
+	
+		getDataURI(path, function(uri){
+			svg.append("image")
+			.attr("xlink:href", uri)
 			.attr("height", (nodeRadius * 2 + borderWidth * 4) * settings.scale + labelAttrs.y)
 			.attr("width", (nodeRadius * 2 + borderWidth * 4) * settings.scale)
-			.attr("transform", "scale(" + 1 / scale + ")");
-//		
-//		var label = svg.append("svg:text")
-//			.text(node.name)		
-//		attachAttr(label, labelAttrs)
-//	
+			.attr("transform", "scale(" + 1 / scale + ")")
+		})	
+		
+		
+//					var label = svg.append("svg:text")
+//						.text(node.name)		
+//					attachAttr(label, labelAttrs)
+
+		
 		return e
+		
+		function getDataURI(path, callback){
+			var image = new Image()
+			var	data;
+			image.onload = function(){
+				var canvas = document.createElement('canvas')
+				canvas.width = this.naturalWidth
+				canvas.height = this.naturalHeight
+				canvas.getContext('2d').drawImage(this, 0, 0)
+				callback(canvas.toDataURL('image/png'))
+			}
+			
+			image.src = path
+
+		}
 		
 	}
 	
@@ -545,9 +567,9 @@ function draw(data){
 		
 		var e = container.selectAll('.glink')
 				.data(glinks).enter()
-				.append('line')
-				.attr('class' , 'glink');
-		attachAttr(e, invisEdgeAttrs);
+//				.append('line')
+//				.attr('class' , 'glink');
+//		attachAttr(e, invisEdgeAttrs);
 				
 		sim.force('glink', d3.forceLink().id(function(d){return d.name;}).strength(0));
 		sim.force('glink').links(glinks);
@@ -645,35 +667,55 @@ function draw(data){
 
 }
 
+//function save(){
+//    // Select the first svg element
+//    var thissvg = document.getElementById("popnet"),
+//    	img = new Image(),
+//        serializer = new XMLSerializer(),
+//        svgStr = serializer.serializeToString(thissvg),
+//		svgBlob = new Blob([svgStr], {type: 'image/svg+xml;charset=utf-8'}),
+//		DOMURL = window.URL || windows.webkitURL || window,
+//		url = DOMURL.createObjectURL(svgBlob),
+//		canvas = document.createElement("canvas"),
+//		scale = 10;
+//    
+//    document.body.appendChild(canvas);
+//    canvas.style.width = width + 'px';
+//    canvas.style.height = height + 'px';
+//    canvas.width = Math.ceil(width * scale);
+//    canvas.height = Math.ceil(height * scale);
+//    
+//    var ctx = canvas.getContext("2d")
+//    ctx.scale(scale, scale)
+//    
+//	img.onload = function () {
+//    	ctx.drawImage(img, 0, 0);
+//    	DOMURL.revokeObjectURL(url);
+//
+//	    var imgURI = canvas
+//	        .toDataURL('image/png')
+//	        .replace('image/png', 'image/octet-stream');
+//	    
+//	    triggerDownload(imgURI);
+//    }
+//    
+//	img.src = url
+//}
+
 function save(){
-    // Select the first svg element
-    var thissvg = document.getElementById("popnet"),
-    	img = new Image(),
-        serializer = new XMLSerializer(),
-        svgStr = serializer.serializeToString(thissvg),
-		svgBlob = new Blob([svgStr], {type: 'image/svg+xml;charset=utf-8'}),
-		DOMURL = window.URL || windows.webkitURL || window,
-		url = DOMURL.createObjectURL(svgBlob),
-		canvas = document.createElement("canvas");
-    
-    document.body.appendChild(canvas);
-    canvas.width = width;
-    canvas.height = height;
-    
-    var ctx = canvas.getContext("2d")
-
-	img.onload = function () {
-    	ctx.drawImage(img, 0, 0);
-    	DOMURL.revokeObjectURL(url);
-
-	    var imgURI = canvas
-	        .toDataURL('image/png')
-	        .replace('image/png', 'image/octet-stream');
-	    
-	    triggerDownload(imgURI);
-    }
-    
-	img.src = url
+	
+	svg = document.getElementById("popnet")
+	doc = new PDFDocument()
+	stream = doc.pipe(blobStream())
+	
+	//add content
+	SVGtoPDF(doc, svg, 0, 0, {useCSS:true})
+	doc.end()
+	stream.on('finish', function(){
+//		blob = stream.toBlob('application/pdf')
+		url = stream.toBlobURL('application/pdf')
+		triggerDownload(url);
+	})
 }
 
 function triggerDownload(imgURI){
@@ -684,7 +726,7 @@ function triggerDownload(imgURI){
       });
 
 	var a = document.getElementById('dl');
-	a.setAttribute('download', 'popnet.png');
+	a.setAttribute('download', 'popnet.pdf');
 	a.setAttribute('href', imgURI);
 	a.setAttribute('target', '_blank');
 	

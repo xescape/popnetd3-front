@@ -6,12 +6,17 @@
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src='lodash.js'></script>
+<script src="pdfkit.js"></script>
+<script src='topdf.js'></script>
+<script src='blob-stream.js'></script>
+<script src="/node_modules/markdown/lib/markdown.js"></script>
+<link rel="stylesheet" href="index.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
 <link rel=stylesheet href="https://s3-us-west-2.amazonaws.com/colors-css/2.2.0/colors.min.css">
-<link rel="stylesheet" href="index.css">
+<link rel="stylesheet" href="https://cdn.rawgit.com/CreativeIT/getmdl-select/master/getmdl-select.min.css">
+<script defer src="https://cdn.rawgit.com/CreativeIT/getmdl-select/master/getmdl-select.min.js"></script>
 <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
-<script src="/node_modules/markdown/lib/markdown.js"></script>
 </head>
 <body>
 <!-- Always shows a header, even in smaller screens. -->
@@ -35,25 +40,137 @@
     	</span>
     </div>
   </div>
+  
   <main class="mdl-layout__content" id="container">
+  
   	<div class="mdl-card mdl-shadow--2dp" id="viewport">
-	    <div class="page-content" id="graph"></div>
-	    <div class="page-content" id="bar">
-
-    		<button class="mdl-button mdl-js-button mdl-button--icon" id="button-save">
- 					<i class="material-icons">save</i>
- 					<a id='dl' download='popnet.png'></a>
-			</button>
-
-	    	<button class="mdl-button mdl-js-button mdl-button--icon" id="button-reset">
-  				<i class="material-icons">refresh</i>
-			</button>
-	    	<button class="mdl-button mdl-js-button mdl-button--icon" id="button-force">
-  				<i class="material-icons">play_circle_outline</i>
-			</button>
-	    </div>
-  	</div>
   	
+	   	<div class= "mdl-tabs mdl-js-tabs" id = "tab_container">
+	   
+		   	<div class = "mdl-tabs__tab-bar" id = "tab_bar">
+		   		<a href = "#config_panel" class = "mdl-tabs__tab is-active"> Configuation </a>
+		   		<a href = "#graph_panel" class = "mdl-tabs__tab"> Graph </a>
+		   	</div>
+	    	
+	    	<div class = "mdl-tabs__panel is-active" id="config_panel">
+	    	
+	    		<div class = "page-content" id = "config">
+	    			
+	    			<div id = "buffer"></div>
+	    		
+					<div class = "hflex">
+					
+    					<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label getmdl-select entry">
+					    	<input class="mdl-textfield__input" id="species" name="species" value="Plasmodium(Default)" type="text" readonly tabIndex="-1" data-val="pla"/>
+					    		<label class="mdl-textfield__label" for="country">Species</label>
+					       		<ul class="mdl-menu mdl-menu--bottom-left mdl-js-menu" for="species">
+					         		<li class="mdl-menu__item" data-val="pla">Plasmodium(Default)</li>
+					         		<li class="mdl-menu__item" data-val="tox">Toxoplasma</li>
+					         		<li class="mdl-menu__item" data-val="sac">Saccharomyces</li>
+					       		</ul>
+						</div>
+					   
+					   	<button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored tooltip" id="button-help">
+	    					<i class = 'material-icons'>help</i>
+	    				</button>
+					 
+						<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label getmdl-select entry">
+					   		<input class="mdl-textfield__input" id="input" name="input" value="Tabular(Default)" type="text" readonly tabIndex="-1" data-val="tab"/>
+					       		<label class="mdl-textfield__label" for="country">Input Format</label>
+					       		<ul class="mdl-menu mdl-menu--bottom-left mdl-js-menu" for="input">
+					         		<li class="mdl-menu__item" data-val="tab">Tabular(Default)</li>
+					         		<li class="mdl-menu__item" data-val="nuc">Nucmer(In Development)</li>
+					       		</ul>
+						</div>
+
+						<button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored tooltip" id="button-help">
+	    					<i class = 'material-icons'>help</i>
+	    				</button>
+  
+	  					<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label entry">
+	    					<input class="mdl-textfield__input" type="text" id = "reference" />
+	    					<label class="mdl-textfield__label" for="reference"> Reference Sample </label>
+	    				</div>
+					</div>
+					
+    				
+
+		    				
+		    		<div class = 'hflex'>	
+		    			<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label entry">
+	    					<input class="mdl-textfield__input" type="text" id = "ival" />
+	    					<label class="mdl-textfield__label" for="reference"> I Value </label>
+	    				</div>
+	    				
+	    				<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label entry">
+	    					<input class="mdl-textfield__input" type="text" id = "pival" />
+	    					<label class="mdl-textfield__label" for="reference"> pI Value </label>
+	    				</div>
+	    				
+	    				<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label entry">
+	    					<input class="mdl-textfield__input" type="text" id = "sl" />
+	    					<label class="mdl-textfield__label" for="reference"> Section Length </label>
+	    				</div>
+	    				
+	    				<button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored tooltip" id="button-help">
+	    					<i class = 'material-icons'>help</i>
+	    				</button>
+	    			</div>
+	    			
+    				<div class = 'hflex'>
+	   				 	<form>
+							<div class="mdl-textfield mdl-js-textfield mdl-textfield--file">
+								<input class="mdl-textfield__input" placeholder="File" type="text" id="uploadFile" readonly/>
+								<div class="mdl-button mdl-button--primary mdl-button--icon mdl-button--file">
+								  	<i class="material-icons">attach_file</i><input type="file" id="uploadBtn">
+								</div>
+							</div>
+							<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label entry">
+	    						<input class="mdl-textfield__input" type="text" pattern=".+[@].+[.].+" id = "email" />
+	    						<label class="mdl-textfield__label" for="reference"> Email Address </label>
+	    						<span class="mdl-textfield__error">Please enter a valid email</span>
+	    					</div>
+						</form>
+    				</div>
+    			
+					<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="submit">
+						Submit
+					</button>
+	    			
+	    		</div>
+	    		
+	    	</div>
+    	
+	    	<div class = "mdl-tabs__panel" id="graph_panel">
+	    		<div class = "page-content" id = "graph_container">
+		    		<div class = "page-content" id = "fileselect">
+		    			<form action = "#">
+		    				<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+		    					<input class="mdl-textfield__input" type="text" id="jobid">
+		    					<label class="mdl-textfield__label" for="jobid">Job ID</label>
+		    				</div>
+		    			</form>
+		    			<button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored" id="button-launch">
+		    				<i class = 'material-icons'>arrow_forward</i>
+		    			</button>
+		    		</div>
+		    		
+		    		<div class="page-content" id="graph"></div>
+			    	<div class="page-content" id="bar">
+		    			<button class="mdl-button mdl-js-button mdl-button--icon" id="button-save">
+		 					<i class="material-icons">save</i>
+		 					<a id='dl' download='popnet.png'></a>
+						</button>
+			    		<button class="mdl-button mdl-js-button mdl-button--icon" id="button-reset">
+		  					<i class="material-icons">refresh</i>
+						</button>
+			    		<button class="mdl-button mdl-js-button mdl-button--icon" id="button-force">
+		  					<i class="material-icons">play_circle_outline</i>
+						</button>
+					</div>
+				</div>
+		   	 </div>
+  	</div>
   </main>
 </div>
 <script src="popnetmain.js"></script>
