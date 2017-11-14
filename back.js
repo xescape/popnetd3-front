@@ -53,7 +53,7 @@ function getPainting(req, res){
 
 	}
 	
-	var path = './' + params['file'] + '.json'
+	var path = './results/' + params['file'] + '.json'
 	if(params['file'] != file){
 		file = params['file']
 		data = JSON.parse(fs.readFileSync(path, 'utf8'))

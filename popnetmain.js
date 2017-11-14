@@ -30,7 +30,7 @@
 
 //TODO: User defined variables
 var url = "http://calyptospora:3000"
-var input = url + "/data3.json";
+var input = url + "/results/data3.json";
 
 //TODO: init the svg element
 
@@ -105,6 +105,60 @@ document.getElementById("button-save").addEventListener("click", save, false);
 $.post(url + '/c/settings', {settings: JSON.stringify(settings)}, function(data){
 	d3.json(input, draw)
 })
+
+document.getElementById("uploadBtn").onchange = function () {
+    document.getElementById("uploadFile").value = this.files[0].name;
+};
+
+document.getElementById("submit").addEventListener("click", submit, false);
+
+document.getElementById("launch").addEventListener("click", launch, false);
+
+function submit(){
+	
+	console.log("submitting")
+	var config = new FormData(),
+		ival = document.getElementById("ival").value,
+		pival = document.getElementById("pival").value,
+		sl = document.getElementById("sl").value
+		
+	config.append('test', 'asdf')
+	config.append('species', document.getElementById("species").value)
+	config.append('format', document.getElementById("input").value)
+	config.append('reference', document.getElementById("reference").value)
+	config.append('ival', document.getElementById("ival").value)
+	config.append('pival', document.getElementById("pival").value)
+	config.append('sl', document.getElementById("sl").value)
+	config.append('file', document.getElementById("uploadBtn").files[0], document.getElementById("uploadBtn").files[0].name)
+	config.append('email', document.getElementById("email").value)
+	
+	
+	console.log(config)
+	
+	if(0 > ival > 20 || 0 > pival > 20 || 0 > sl){ alert("Please set appropriate cluster parameters according to tooltip.")}
+	else{
+		
+		var request = new XMLHttpRequest();
+		request.open('POST', url + "/data/run")
+		
+		request.onreadystatechange = function(){
+			if(request.readyState == XMLHttpRequest.DONE && request.status == 200){
+				alert('Your job has been received. Please wait for an email response when it is completed.')
+			}
+		}
+		
+		request.send(config)
+	}
+	
+	
+}
+
+function launch(){
+	id = document.getElementById('jobid').value
+	input = url + "/results/" + id + ".json"
+	svg.html("")
+	d3.json(input, draw)
+}
 	
 //TODO: load graph data
 
