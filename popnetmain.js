@@ -29,7 +29,7 @@
  */
 
 //TODO: User defined variables
-var url = "http://calyptospora:3000"
+var url = "http://compsysbioi.org:3000"
 var input = url + "/results/data3.json";
 
 //TODO: init the svg element
