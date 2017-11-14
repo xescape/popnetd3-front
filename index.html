@@ -33,14 +33,16 @@
       </nav>
     </div>
   </header>
+  
+  <!-- 
   <div class="mdl-layout__drawer">
-  <!--  make one of these two invisible at all times. -->
     <div class="mdl-card" id="menu">
 	    <span class="mdl-layout-title" id="ins1">
     	</span>
     </div>
   </div>
-  
+  -->
+   
   <main class="mdl-layout__content" id="container">
   
   	<div class="mdl-card mdl-shadow--2dp" id="viewport">
@@ -48,11 +50,18 @@
 	   	<div class= "mdl-tabs mdl-js-tabs" id = "tab_container">
 	   
 		   	<div class = "mdl-tabs__tab-bar" id = "tab_bar">
-		   		<a href = "#config_panel" class = "mdl-tabs__tab is-active"> Configuation </a>
-		   		<a href = "#graph_panel" class = "mdl-tabs__tab"> Graph </a>
+		   		<a href = "#landing_panel" class = "mdl-tabs__tab is-active"> Welcome </a>
+		   		<a href = "#config_panel" class = "mdl-tabs__tab"> Submit Job </a>
+		   		<a href = "#graph_panel" class = "mdl-tabs__tab"> Visualization </a>
 		   	</div>
 	    	
-	    	<div class = "mdl-tabs__panel is-active" id="config_panel">
+	    	<div class = "mdl-tabs__panel is-active" id="landing_panel">
+	    		<div class = "page-content" id = "landing">
+	    			<span id = "ins1"></span>
+	    		</div>    	
+	    	</div>
+	    	
+	    	<div class = "mdl-tabs__panel" id="config_panel">
 	    	
 	    		<div class = "page-content" id = "config">
 
@@ -69,7 +78,8 @@
 						</div>
 					   
 					   	<button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored tooltip" id="button-help">
-	    					<i class = 'material-icons'>help</i>
+	    					<i class = 'material-icons' id='help1'>help</i>
+	    					<div class = "mdl-tooltip" for="help1">Affects chromosome name parsing. Choose Plasmodium for all other species.</div>
 	    				</button>
 					 
 						<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label getmdl-select entry">
@@ -82,7 +92,8 @@
 						</div>
 
 						<button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored tooltip" id="button-help">
-	    					<i class = 'material-icons'>help</i>
+	    					<i class = 'material-icons' id = 'help2'>help</i>
+	    					<div class = "mdl-tooltip" for="help2"> We currently only accept tabular format. Please see welcome page for example. </div>
 	    				</button>
   
 	  					<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label entry">
@@ -91,7 +102,8 @@
 	    				</div>
 	    				
 	    				<button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored tooltip" id="button-help">
-	    					<i class = 'material-icons'>help</i>
+	    					<i class = 'material-icons' id = 'help3'>help</i>
+	    					<div class = "mdl-tooltip" for="help3"> Enter a name only if your input table has a REF column. Otherwise put 'None' </div>
 	    				</button>
 					</div>
 					
@@ -115,7 +127,8 @@
 	    				</div>
 	    				
 	    				<button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored tooltip" id="button-help">
-	    					<i class = 'material-icons'>help</i>
+	    					<i class = 'material-icons' id = 'help4'>help</i>
+	    					<div class = "mdl-tooltip" for="help4"> Recommended values to try are I = 4, pI = 1.5, length = 10000 </div>
 	    				</button>
 	    			</div>
 	    			
@@ -134,7 +147,8 @@
 	    					</div>
 						</form>
 						<button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored tooltip" id="button-help">
-	    					<i class = 'material-icons'>help</i>
+	    					<i class = 'material-icons' id = 'help5'>help</i>
+	    					<div class = "mdl-tooltip" for="help5"> Please upload the aligned SNP table, and enter an email address to receive the job completion notice.</div>
 	    				</button>
     				</div>
     			

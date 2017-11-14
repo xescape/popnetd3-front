@@ -86,7 +86,10 @@ div.entry{
 }
 
 #tab_bar{
+	display: flex;
 	order: 0;
+	flex-basis: 50px;
+	height: 30px;
 }
 
 #config_container{
@@ -154,10 +157,11 @@ div.entry{
 	font: arial;
 	font-size: 14;
 	width: inherit;
-	margin: auto;
+	margin: 0px 50px 0px 50px;
 	display: block;
 	overflow-wrap: break-word;
 	margin-top: 100px;
 	padding: 10px;
 	scroll: disabled;
+	text-align: left;
 }
