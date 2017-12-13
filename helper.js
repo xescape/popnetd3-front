@@ -17,5 +17,6 @@ function showMD(e, file)
     request.send(null);
 }
 
+//var helppath = "http:www.compsysbio.org/popnet/bin/help1.md"
 var helppath = "/bin/help1.md"
 showMD(document.getElementById('ins1'), helppath)

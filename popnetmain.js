@@ -95,6 +95,16 @@ var settings = {
 }
 
 //listeners
+var chr = 'all'
+	
+document.getElementById("chr").addEventListener("change", function(){
+	console.log(document.getElementById("chr").getAttribute("data-val"))
+	chr = document.getElementById("chr").getAttribute("data-val");
+	svg.html("")
+	d3.json(input, draw)
+})
+
+
 document.getElementById("button-reset").addEventListener("click", function(){
 	svg.html("")
 	d3.json(input, draw)
@@ -158,8 +168,10 @@ function launch(){
 	input = url + "/results/" + id + ".json"
 	svg.html("")
 	d3.json(input, draw)
+
 }
-	
+
+
 //TODO: load graph data
 
 
@@ -274,7 +286,37 @@ function draw(data){
 	groupForce(simulation);
 	groupCircle(true);
 	forceInit();
-
+	
+	chr_count = countChrs(data.nodes[0].ids)
+	updateChrs(chr_count)
+	console.log(document.getElementById('chr').value)
+	
+	function updateChrs(n){
+		
+		var all = "<li class=\"mdl-menu__item\" data-val=\"all\">All</li>\n"
+		
+		var html = _.range(n).map(function(val){
+			val = val + 1
+			return "<li class=\"mdl-menu__item\" data-val=\"CHR" + val + "\">Chromosome " + val + "</li>\n"
+		}).join('')
+		
+		document.getElementById('chr_select').innerHTML = all + html;
+		getmdlSelect.init('.getmdl-select')
+	}
+	
+	function countChrs(ids){
+		var n = ids.reduce(function(total, curr){
+					
+			if(curr === 'SPACER'){
+				return total + 1
+			}
+			else{
+				return total
+			}
+		}, 0)
+		
+		return n
+	}
 	
 	
 //	console.log('beep')
@@ -443,7 +485,7 @@ function draw(data){
 		var e = document.createElementNS("http://www.w3.org/2000/svg", "svg")
 		var svg = d3.select(e)
 					.attr("name", node.name)
-		var path = "./c/" + file + "/" + node.name + ".png"
+		var path = "./c/" + file + "/" + node.name + "\_" + chr + ".png"
 	
 		getDataURI(path, function(uri){
 			svg.append("image")
@@ -716,6 +758,8 @@ function draw(data){
 		}) //positions the nodes
 	
 	}
+	
+	
 	
 
 

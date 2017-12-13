@@ -40,6 +40,10 @@ function getPainting(req, res){
 //	console.log('./' + params['file'] + '.json')
 	var dir = './c/' + params['file']
 	
+	var id_split = params['id'].split("_")
+	params['id'] = id_split[0]
+	params['chr'] = id_split[1]
+	
 	if(!fs.existsSync(dir)){
 		fs.mkdirSync(dir)
 	}
@@ -58,20 +62,28 @@ function getPainting(req, res){
 		file = params['file']
 		data = JSON.parse(fs.readFileSync(path, 'utf8'))
 	}
-//	console.log(data)
+
 	draw()
 
 	function draw(){
 		
 		console.log('drawing once')
 		
-		var outpath = '/c/' + params['file'] + '/' + params['id'] + '.png'
+		var outpath = '/c/' + params['file'] + '/' + params['id'] + "\_" + params['chr'] + '.png'
 		d3n = new d3node()
 		if(settings === null){settings = JSON.parse(fs.readFileSync(settingspath, 'utf8'))}
 		
-		var node = data.nodes.filter(function(e){
-			return e.name === params.id
-		})[0]
+		if(params['chr'] !== 'all'){
+			
+			var node = getChr(data.nodes.filter(function(e){
+				return e.name === params.id
+			})[0], params['chr'])
+		}
+		else{
+			var node = data.nodes.filter(function(e){
+				return e.name === params.id
+			})[0]
+		}
 		paintChr(node, data.colorTable, outpath)
 		
 		var svgBuffer = new Buffer(d3n.svgString(), 'utf-8')
@@ -85,13 +97,37 @@ function getPainting(req, res){
 			})
 			.catch(function(err){console.log('svg2png error ' + err)})
 		
+		function getChr(node, chr){
+				var format = /CHR([0-9]+)$/,
+					n = format.exec(chr)[1]
+					
+				var inds = []
+				for(i = 0; i < node.ids.length; i++){
+					if (node.ids[i] === 'SPACER'){
+						inds.push(i)
+					}
+				}
+				
+				var new_ids = node.ids.slice(inds[n-1] + 1, inds[n]),
+					new_lengths = node.lengths.slice(inds[n-1] + 1, inds[n])
+				
+				console.log("n is" + n + 'inds is' + inds)
+				
+				return {
+					ids : new_ids,
+					name : node.name,
+					lengths : new_lengths,
+					id : node.id,
+					group : node.group
+				}
+			}
 	}
 }
 
 function paintChr(node, colorTable, outpath){
 	
 //	e = document.createElementNS("http://www.w3.org/2000/svg", "svg")
-
+	
 	var nodeRadius = settings.nodeRadius
 	var scale = settings.scale
 	var borderWidth = settings.borderAttrs["stroke-width"]
