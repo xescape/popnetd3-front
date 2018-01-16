@@ -14,9 +14,13 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
 <link rel=stylesheet href="https://s3-us-west-2.amazonaws.com/colors-css/2.2.0/colors.min.css">
-<link rel="stylesheet" href="https://cdn.rawgit.com/CreativeIT/getmdl-select/master/getmdl-select.min.css">
-<script defer src="https://cdn.rawgit.com/CreativeIT/getmdl-select/master/getmdl-select.min.js"></script>
+
+<link rel="stylesheet" href="./node_modules/getmdl-select/getmdl-select.min.css">
+
+<script defer src="./node_modules/getmdl-select/getmdl-select.min.js"></script>
+
 <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+
 </head>
 <body>
 <!-- Always shows a header, even in smaller screens. -->
@@ -66,27 +70,33 @@
 	    		<div class = "page-content" id = "config">
 
 					<div class = "hflex">
-					
+			
     					<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label getmdl-select entry">
-					    	<input class="mdl-textfield__input" id="species" name="species" value="Plasmodium(Default)" type="text" readonly tabIndex="-1" data-val="pla"/>
-					    		<label class="mdl-textfield__label" for="country">Species</label>
-					       		<ul class="mdl-menu mdl-menu--bottom-left mdl-js-menu" for="species">
-					         		<li class="mdl-menu__item" data-val="pla">Plasmodium(Default)</li>
-					         		<li class="mdl-menu__item" data-val="tox">Toxoplasma</li>
-					         		<li class="mdl-menu__item" data-val="sac">Saccharomyces</li>
-					       		</ul>
+					    	<input class="mdl-textfield__input" id="species" value="" type="text" readonly>
+					    	<input type="hidden" value="" name="species">
+					    	<i class="mdl-icon-toggle__label material-icons">keyboard_arrow_down</i> 
+				    		<label class="mdl-textfield__label" for="species">Species</label>
+				       		<ul class="mdl-menu mdl-menu--bottom-left mdl-js-menu" for="species">
+				         		<li class="mdl-menu__item" data-val="pla" data-selected="true">Plasmodium(Default)</li>
+				         		<li class="mdl-menu__item" data-val="tox">Toxoplasma</li>
+				         		<li class="mdl-menu__item" data-val="sac">Saccharomyces</li>
+				       		</ul>
 						</div>
+
+					   
 					   
 					   	<button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored tooltip" id="button-help">
 	    					<i class = 'material-icons' id='help1'>help</i>
 	    					<div class = "mdl-tooltip" for="help1">Affects chromosome name parsing. Choose Plasmodium for all other species.</div>
 	    				</button>
-					 
+
 						<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label getmdl-select entry">
-					   		<input class="mdl-textfield__input" id="input" name="input" value="Tabular(Default)" type="text" readonly tabIndex="-1" data-val="tab"/>
-					       		<label class="mdl-textfield__label" for="country">Input Format</label>
+					   		<input class="mdl-textfield__input" id="input" value="" type="text" readonly>
+					   		<input type="hidden" value="" name="input">
+					    	<i class="mdl-icon-toggle__label material-icons">keyboard_arrow_down</i> 
+					       		<label class="mdl-textfield__label" for="input">Input Format</label>
 					       		<ul class="mdl-menu mdl-menu--bottom-left mdl-js-menu" for="input">
-					         		<li class="mdl-menu__item" data-val="tab">Tabular(Default)</li>
+					         		<li class="mdl-menu__item" data-val="tab" data-selected="true">Tabular(Default)</li>
 					         		<li class="mdl-menu__item" data-val="nuc">Nucmer(In Development)</li>
 					       		</ul>
 						</div>
@@ -105,9 +115,11 @@
 	    					<i class = 'material-icons' id = 'help3'>help</i>
 	    					<div class = "mdl-tooltip" for="help3"> Enter a name only if your input table has a REF column. Otherwise put 'None' </div>
 	    				</button>
+ 
+	    					    				
 					</div>
 					
-    				
+ 				
 
 		    				
 		    		<div class = 'hflex'>	
@@ -186,13 +198,17 @@
 			    		<button class="mdl-button mdl-js-button mdl-button--icon" id="button-force">
 		  					<i class="material-icons">play_circle_outline</i>
 						</button>
-						<div class="mdl-textfield mdl-js-textfield getmdl-select" id="chr_container">
-					   		<input class="mdl-textfield__input" id="chr" name="chr" value="Select Chromosome" type="text" readonly tabIndex="-1" data-val="all"/>
-					       		<label class="mdl-textfield__label" for="chr">Select Chromosome</label>
-					       		<ul class="mdl-menu mdl-menu--top-left mdl-js-menu" for="chr" id = 'chr_select'>
-					         		<li class="mdl-menu__item" data-val="all">Select Chromosome2</li>
-					       		</ul>
+
+						<div class="mdl-textfield mdl-js-textfield getmdl-select getmdl-select__fix-height" id="chr_container">
+					   		<input class="mdl-textfield__input" id="chr" value="" type="text" readonly>
+					   		<input type="hidden" value="" name="chr" id="chr2">
+					    	<i class="mdl-icon-toggle__label material-icons">keyboard_arrow_down</i> 
+				       		<label class="mdl-textfield__label" for="chr">Select Chromosome</label>
+				       		<ul class="mdl-menu mdl-menu--top-left mdl-js-menu" for="chr" id = 'chr_select'>
+				         		<li class="mdl-menu__item" data-val="all">All</li>
+				       		</ul>
 						</div>
+
 					</div>
 				</div>
 		   	 </div>

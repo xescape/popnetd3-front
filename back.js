@@ -19,7 +19,8 @@ router.use(bodyParser.urlencoded({extended: false}))
 router.use(bodyParser.json())
 
 makeDefaultSettings(settingspath)
-router.get('/:file/:id.png', getPainting);
+router.get('/:file/:id.png', getPainting)
+router.get('/:file/:id.svg', getSVG)
 router.post('/settings', changeSettings)
 console.log('initiated once')
 
@@ -33,8 +34,77 @@ function changeSettings(req, res){
 }
 
 function getPainting(req, res){
-	
 	console.log('getpainting called once')
+	
+	var params = parseParams(req)
+	params['outpath'] = '/c/' + params['file'] + '/' + params['id'] + "\_" + params['chr'] + '.png'
+	if(!fs.existsSync(params['outpath'])){	
+		svg2png(draw(params))
+		.then(function(buffer){
+			fs.writeFileSync(__dirname + params['outpath'], buffer, function(err){
+				console.log('write file ' + err)
+			})
+			console.log('sending '+ params['outpath'])
+			res.sendFile(params['outpath'], {root : __dirname}, function(err){ if(err) console.log('sendfile error, ' + err)})
+		})
+		.catch(function(err){console.log('svg2png error ' + err)})
+	}
+	else{
+		console.log('sending '+ params['outpath'])
+		res.sendFile(params['outpath'], {root : __dirname}, function(err){ if(err) console.log('sendfile error, ' + err)})
+	}
+}
+
+function getSVG(req, res){
+	console.log('getsvg called once')
+	var d3n = drawSVG(parseParams(req))
+//	console.log(d3n.svgString().substring(0,100))
+	console.log('sending svg ' + d3n.svgString().substring(0,100))
+	res.send(d3n.svgString())
+}
+
+
+function draw(params){
+	
+	console.log('drawing' + params['id'] + params['chr'])
+	var outpath = params['outpath']
+	
+	d3n = new d3node()
+	if(settings === null){settings = JSON.parse(fs.readFileSync(settingspath, 'utf8'))}
+	
+	var node = getNode(params)
+	
+	paintChr(node, data.colorTable, outpath)
+	
+	var svgBuffer = new Buffer(d3n.svgString(), 'utf-8')
+	
+	return svgBuffer
+	
+	console.log('draw ends for ' + outpath)
+}
+
+function drawSVG(params){
+	
+	d3n = new d3node()
+	
+	if(!params['chr'] === 'all'){
+		console.log('tried to generate svg for chr')
+		return d3n.append('svg')
+	}
+	
+	console.log('drawing svg once')
+	
+	if(settings === null){settings = JSON.parse(fs.readFileSync(settingspath, 'utf8'))}
+	
+	var node = getNode(params)
+	
+	paintChr(node, data.colorTable, '', 'SVG')
+	
+	return d3n
+	
+}
+
+function parseParams(req){
 	
 	var params = req.params
 //	console.log('./' + params['file'] + '.json')
@@ -62,69 +132,55 @@ function getPainting(req, res){
 		file = params['file']
 		data = JSON.parse(fs.readFileSync(path, 'utf8'))
 	}
+	
+	return params
+}
 
-	draw()
+function getNode(params){
+		
+	if(params['chr'] !== 'all'){
+		
+		var node = getChr(data.nodes.filter(function(e){
+			return e.name === params.id
+		})[0], params['chr'])
+	}
+	else{
+		var node = data.nodes.filter(function(e){
+			return e.name === params.id
+		})[0]
+	}
+	
+	return node
+}
 
-	function draw(){
+
+
+function getChr(node, chr){
+	var format = /CHR([0-9]+)$/,
+		n = format.exec(chr)[1]
 		
-		console.log('drawing once')
-		
-		var outpath = '/c/' + params['file'] + '/' + params['id'] + "\_" + params['chr'] + '.png'
-		d3n = new d3node()
-		if(settings === null){settings = JSON.parse(fs.readFileSync(settingspath, 'utf8'))}
-		
-		if(params['chr'] !== 'all'){
-			
-			var node = getChr(data.nodes.filter(function(e){
-				return e.name === params.id
-			})[0], params['chr'])
+	var inds = []
+	for(i = 0; i < node.ids.length; i++){
+		if (node.ids[i] === 'SPACER'){
+			inds.push(i)
 		}
-		else{
-			var node = data.nodes.filter(function(e){
-				return e.name === params.id
-			})[0]
-		}
-		paintChr(node, data.colorTable, outpath)
-		
-		var svgBuffer = new Buffer(d3n.svgString(), 'utf-8')
-		svg2png(svgBuffer)
-			.then(function(buffer){
-				console.log(outpath)
-				fs.writeFileSync(__dirname + outpath, buffer, function(err){
-					console.log('write file ' + err)
-				})
-				res.sendFile(outpath, {root : __dirname}, function(err){ if(err) console.log('sendfile error')})
-			})
-			.catch(function(err){console.log('svg2png error ' + err)})
-		
-		function getChr(node, chr){
-				var format = /CHR([0-9]+)$/,
-					n = format.exec(chr)[1]
-					
-				var inds = []
-				for(i = 0; i < node.ids.length; i++){
-					if (node.ids[i] === 'SPACER'){
-						inds.push(i)
-					}
-				}
-				
-				var new_ids = node.ids.slice(inds[n-1] + 1, inds[n]),
-					new_lengths = node.lengths.slice(inds[n-1] + 1, inds[n])
-				
-				console.log("n is" + n + 'inds is' + inds)
-				
-				return {
-					ids : new_ids,
-					name : node.name,
-					lengths : new_lengths,
-					id : node.id,
-					group : node.group
-				}
-			}
+	}
+	
+	var new_ids = node.ids.slice(inds[n-1] + 1, inds[n]),
+		new_lengths = node.lengths.slice(inds[n-1] + 1, inds[n])
+	
+//	console.log("n is" + n + 'inds is' + inds)
+	
+	return {
+		ids : new_ids,
+		name : node.name,
+		lengths : new_lengths,
+		id : node.id,
+		group : node.group
 	}
 }
 
-function paintChr(node, colorTable, outpath){
+function paintChr(node, colorTable, outpath, mode = 'PNG'){
 	
 //	e = document.createElementNS("http://www.w3.org/2000/svg", "svg")
 	
@@ -149,25 +205,43 @@ function paintChr(node, colorTable, outpath){
 			return d;
 		});
 	
-	var circle = svg.append("circle")
-				.attr("stroke", function(d){ return colorTable[node.name]});
-	attachAttr(circle, settings.borderAttrs);
-
-	
-	var g = svg.selectAll(".arc")
-		.data(pie(node.lengths))
-		.enter().append("g")
-		.attr("class", "arc");
+	if(mode === 'PNG'){
 		
-	g.append("path")
-		.attr("d", arc)
-		.style("fill", function(d, i){
-			return colorTable[node.ids[i]];
-			});
+		var circle = svg.append("circle")
+			.attr("stroke", function(d){ return colorTable[node.name]});
+		attachAttr(circle, settings.borderAttrs);
+
+		
+		var g = svg.selectAll(".arc")
+			.data(pie(node.lengths))
+			.enter().append("g")
+			.attr("class", "arc");
+		
+		g.append("path")
+			.attr("d", arc)
+			.style("fill", function(d, i){
+				return colorTable[node.ids[i]];
+				});
+		
+		label = svg.append("svg:text")
+			.text(node.name)		
+		attachAttr(label, settings.labelAttrs)	
+	}
+	else{
+				
+		svg.attr("class", 'svg')
+		var g = svg.selectAll(".arc")
+			.data(pie(findOutline(node.ids, node.lengths)))
+			.enter().append("g")
+			.attr("class", "arc")
+			.attr("stroke", "black")
+			.attr("stroke-width", 1)
+			.attr("fill-opacity", 0);
+		
+		g.append("path")
+			.attr("d", arc)
+	}
 	
-	label = svg.append("svg:text")
-		.text(node.name)		
-	attachAttr(label, settings.labelAttrs)
 }
 
 function makeDefaultSettings(path){
@@ -211,6 +285,33 @@ function attachAttr(selection, attribute){
 		selection.attr(d, attribute[d]);
 	})
 	return selection;
+}
+
+function findOutline(ids, lengths){
+	
+
+	var result = [],
+		run_sum = 11
+	
+	for(i = 1; i < ids.length; i++){
+		
+		run_sum += parseInt(lengths[i])
+	
+		
+		if(ids[i] === 'SPACER'){
+			result.push(run_sum)
+			run_sum = 0
+		}
+
+	
+		
+	}
+	
+	result.push(run_sum)
+	
+	return result
+	
+	
 }
 
 module.exports = router
