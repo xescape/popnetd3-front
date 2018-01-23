@@ -115,26 +115,33 @@ var svg = d3.select("#graph").append("svg")
 //listeners
 var chr = 'all'
 var chrn
+var draw_state
+var node_list = ['3142', 'SOU']
 
 document.getElementById("chr").addEventListener("change", function(){
 //	console.log(document.getElementById("chr").getAttribute("data-val"))
 	chr = document.getElementById("chr2").value;
 //	svg.html("")
 //	d3.json(input, draw)
-	redraw()
+	draw_state = redraw(draw_state)
 //	console.log(document.getElementById("chr2"))
 })
 
 
 document.getElementById("button-reset").addEventListener("click", function(){
 	svg.html("")
-	d3.json(input, draw)
+	d3.json(input, function(d){ draw_state = draw(d)})
 })
 
 document.getElementById("button-save").addEventListener("click", save, false);
 
+document.getElementById("button-linear").addEventListener("click", getLinear, false);
+
 $.post(url + '/c/settings', {settings: JSON.stringify(settings)}, function(data){
-	d3.json(input, draw)
+	d3.json(input, function(d){ 
+		draw_state = draw(d)
+		console.log('draw_state is now ' + draw_state)
+	})
 })
 
 document.getElementById("uploadBtn").onchange = function () {
@@ -189,8 +196,10 @@ function launch(){
 	id = document.getElementById('jobid').value
 	input = url + "/results/" + id + ".json"
 	svg.html("")
-	d3.json(input, draw)
-
+	d3.json(input, function(d){ 
+		draw_state = draw(d)
+		console.log('draw_state is now ' + draw_state)
+	})
 }
 
 
@@ -429,6 +438,10 @@ function draw(data){
 	groupCircle(simulation, true);
 	forceInit();
 	
+	return {
+		simulation: simulation,
+		nodes: nodes
+	}
 
 //	console.log(document.getElementById('chr').value)
 	
@@ -629,6 +642,8 @@ function appendSVG(node){
 
 
 function getChr(node){
+//	console.log('getchr')
+//	console.log(node)
 	
 	var file = input.match(/[/](\w+?).json/)[1]
 	var e = document.createElementNS("http://www.w3.org/2000/svg", "svg")
@@ -652,26 +667,36 @@ function getChr(node){
 			svgdom = domparser.parseFromString(svgtext.responseText, "image/svg+xml").querySelectorAll("[name='" + node.name + "']")[0]
 			svgdom.removeAttribute("xmlns")
 	
-//			console.log(svgdom)
 			//listener for chr switching
 			if(chr === 'all'){
 				
-				var arcs = svgdom.childNodes[0].childNodes
-				var archeader = svgdom.childNodes[0]
-//				console.log(arcs.length)
+				var arcs = Array.from(svgdom.childNodes[0].childNodes)
+
 				
-				var arc_nodes = svg.append(function(d){return archeader}).selectAll('.arcs').data(_.range(arcs.length))
-								.enter().append(function(d){
-									return arcs[d]
+				var archeader = svgdom.childNodes[0]
+
+				var zzz = _.range(arcs.length)
+
+				var arc_nodes = svg.append(function(d){return archeader;})
+								.selectAll('.arcs').data(zzz)
+								.enter()
+								.append(function(e){
+									return arcs[e];
 								})
-	
+
+								
 				arc_nodes.each(function(d, i){
-					console.log(d3.select(this))
+					
+//					console.log('attaching trigger to chr ' + (i + 1))
+//					console.log('d is ' + d + ' i is ' + i)
+					
 					d3.select(this).on('click', function(){
 						console.log('event clicked!')
 						chr = 'CHR' + (i + 1)
-						redraw()
+						console.log('chr is ' + chr)
+						redraw(draw_state)
 					})
+					
 				})
 	
 			}
@@ -950,17 +975,62 @@ function triggerDownload(imgURI){
 
 
 
-function redraw(){
+function redraw(state){
 	
-	var nodes = d3.selectAll(".nodes")
+	var nodes = state.nodes
 	console.log('redraw')
 	console.log(nodes)
 	
-	nodes.each(function(d){
-		var e = d3.select(this)
-		e.html(null)
-		getChr(e)
+	nodes.each(function(){
+		console.log(this)
+		this.removeChild(this.childNodes[0])
 	})
+	nodes.each(getChr)
+	
+	return state
+}
+
+
+function getLinear(){
+	chr = 'CHR1'
+	var attach = JSON.stringify(node_list.map(function(d, i){
+		return d + "\_" + chr		
+	}))
+	
+	
+	var file = input.match(/[/](\w+?).json/)[1]
+	var e = document.createElementNS("http://www.w3.org/2000/svg", "svg")
+	var svg = d3.select(this).append(function(d){ return e}).append('g')
+	            
+//	console.log(node)
+	
+	var path = "./c/" + file + "/" + attach + ".linear"
+
+	
+	svg.attr("height", (nodeRadius * 2 + borderWidth * 4) * settings.scale + labelAttrs.y)
+	.attr("width", (nodeRadius * 2 + borderWidth * 4) * settings.scale)
+	.attr("transform", "scale(" + 1 / scale + ")")
+//	.attr("transform", "scale(" + 0.1 + ")")
+	
+	getDataURI(path, function(uri){
+		svg.append("image").attr("xlink:href", uri)		
+	})
+	
+	function getDataURI(path, callback){
+		var image = new Image()
+		var	data;
+		image.onload = function(){
+			var canvas = document.createElement('canvas')
+			canvas.width = this.naturalWidth
+			canvas.height = this.naturalHeight
+			canvas.getContext('2d').drawImage(this, 0, 0)
+			callback(canvas.toDataURL('image/png'))
+		}
+		
+		image.src = path
+
+	}
+	
 	
 }
 

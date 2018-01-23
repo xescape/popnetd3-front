@@ -25,13 +25,33 @@ router.post('/settings', changeSettings)
 console.log('initiated once')
 
 
+//for linear
+router.get('/:file/:list.linear', getLinChr)
+
+
 function changeSettings(req, res){
 	console.log('changed settings!')
 	settings = JSON.parse(req.body.settings)
 //	console.log(req.body)
-	reload = true
+//	reload = true
 	res.send('settings complete!')
 }
+
+function getLinChr(req, res){
+	console.log('linear request received')
+	var params = parseLinearParams(req)
+	params['outpath'] = '/c/' + params['file'] + '/linear.png'
+	
+	svg2png(drawLinear(params))
+	.then(function(buffer){
+		fs.writeFileSync(__dirname + params['outpath'], buffer, function(err){
+			console.log('write file error at getlinchr ' + err)
+		})
+		res.sendFile(params['outpath'], {root: __dirname}, function(err){ if(err) console.log('linear  sendfile error, ' + err)})
+	})
+	.catch(function(err){console.log('svg2png error ' + err)})
+}
+
 
 function getPainting(req, res){
 	console.log('getpainting called once')
@@ -136,6 +156,27 @@ function parseParams(req){
 	return params
 }
 
+function parseLinearParams(req){
+	
+	var params = req.params
+	var dir = './c/' + params['file']
+	
+	var id_split = JSON.parse(params['list'])[0].split("_")
+	params['chr'] = id_split[1]
+	
+	var raw_names = JSON.parse(req.params['list']).map(function(d){return d.split("_")[0]})
+	params['names'] = raw_names
+	
+	var path = './results/' + params['file'] + '.json'
+	if(params['file'] != file){
+		file = params['file']
+		data = JSON.parse(fs.readFileSync(path, 'utf8'))
+	}
+	
+	return params
+}
+
+
 function getNode(params){
 		
 	if(params['chr'] !== 'all'){
@@ -153,12 +194,35 @@ function getNode(params){
 	return node
 }
 
-
+function getMultiNodes(params){
+		
+	var names = params['names']
+	
+	var nodes = names.map(function(d,i){
+		if(params['chr'] !== 'all'){
+			
+			var node = getChr(data.nodes.filter(function(e){
+				return e.name === d
+			})[0], params['chr'])
+		}
+		else{
+			var node = data.nodes.filter(function(e){
+				return e.name === d
+			})[0]
+		}
+		
+		return node
+	})
+	
+	return nodes
+	
+}
 
 function getChr(node, chr){
+
 	var format = /CHR([0-9]+)$/,
-		n = format.exec(chr)[1]
-		
+	n = format.exec(chr)[1]
+
 	var inds = []
 	for(i = 0; i < node.ids.length; i++){
 		if (node.ids[i] === 'SPACER'){
@@ -244,6 +308,87 @@ function paintChr(node, colorTable, outpath, mode = 'PNG'){
 	
 }
 
+function drawLinear(params){
+	
+	d3n = new d3node()
+		
+	var nodes = getMultiNodes(params),
+		colorTable = data.colorTable
+	
+	var length = 600,
+		height = 30,
+		front = 150,
+		padding = [10, 10, 10, 10], //top, right, bot, left
+		margin = {top: 20, right: 20, bottom: 30, left: 40},
+		scale = 5
+	
+	var svg = d3n.createSVG()
+				 .attr("width", (length + padding[1] + padding[3]) * scale)
+				 .attr("height", (height + padding[0] + padding[2]) * nodes.length + 1)
+				 .append('g')
+			  
+	
+	//various scales?
+	var band = d3.scaleBand().rangeRound([0, (height + padding[0]) * nodes.length]).paddingInner(0.05).align(0.1);
+	var scale = d3.scaleLinear().range([length, 0])
+	
+	band.domain(nodes.map(function(d){return d.name}))
+	
+	scale.domain([d3.max(nodes, function(d){
+			return d.lengths.reduce(function(t, d){return t + parseInt(d) }, 0)
+		}), 0]).nice();
+
+	
+	var selection = svg.selectAll('.nodes')
+					   .data(nodes).enter().append('g')
+				
+	
+    var stacks = selection.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+						  .selectAll('rect')
+		    			  .data(function(d){return d.lengths}).enter().append('rect')
+		    			 	 .attr("height", height)
+		    			 	 .attr("width", function(d){ 
+		    			 		//console.log(scale(d)); 
+		    			 		 return scale(d) })
+//		    			 		 return d})
+		    			 	 .attr("y", function(d){ 
+		    			 		 return band(d3.select(this.parentNode).data()[0].name)})
+		    			 	 .attr("x", function(d, i){ 
+		    			 		
+		    			 		if(i === 0) return 0
+		    			 		else{
+		    			 			var prev = this.parentNode.childNodes[i - 1]
+		    			 			return parseFloat(prev.getAttribute('x')) + parseFloat(prev.getAttribute('width'))
+		    			 		}
+		    			 		
+		//    			 		return scale(d3.select(this.parentNode).data()[0].lengths.slice(0, i)
+		//    			 				 .reduce(function(t, d){
+		//    			 					 return t + parseInt(d)
+		//    			 				 }, 0))
+		    			 	})
+		    			 	.attr("fill", function(d, i){
+		    			 		return colorTable[d3.select(this.parentNode).data()[0].ids[i]]
+		    			 	})
+    			 	
+    			 	
+    			 
+	//axes
+	svg.append("g")
+		.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+		.attr("class", "axis")
+//		.attr("transform", "translate(0" + height + ")")
+		.call(d3.axisLeft(band))
+	
+	svg.append("g")
+		.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+		.attr("class", "axis")
+		.call(d3.axisTop(scale))
+	
+    fs.writeFileSync('./asdf.xml', d3n.svgString())
+		
+	return d3n
+}
+
 function makeDefaultSettings(path){
 	
 	var scale = 5
@@ -310,8 +455,7 @@ function findOutline(ids, lengths){
 	result.push(run_sum)
 	
 	return result
-	
-	
+
 }
 
 module.exports = router
