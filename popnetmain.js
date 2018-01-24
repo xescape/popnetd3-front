@@ -116,7 +116,7 @@ var svg = d3.select("#graph").append("svg")
 var chr = 'all'
 var chrn
 var draw_state
-var node_list = ['3142', 'SOU']
+var node_list = []
 
 document.getElementById("chr").addEventListener("change", function(){
 //	console.log(document.getElementById("chr").getAttribute("data-val"))
@@ -693,12 +693,36 @@ function getChr(node){
 					d3.select(this).on('click', function(){
 						console.log('event clicked!')
 						chr = 'CHR' + (i + 1)
-						console.log('chr is ' + chr)
+//						console.log('chr is ' + chr)
 						redraw(draw_state)
 					})
 					
 				})
 	
+			}
+			else{
+				svg.on("click", function(){
+					
+					if($.inArray(node.name, node_list) >= 0){
+						d3.select(this).selectAll(".selected").remove()
+						node_list.splice(node_list.indexOf(node.name), 1)
+						console.log(node.name + " removed from")
+					}
+					else{
+						d3.select(this).append('circle')
+						.attr("class", "selected")
+						.attr("fill", "none")
+						.attr("r", settings.nodeRadius)
+						.attr("stroke", "yellow")
+						.attr("stroke-width", '20')
+						.attr("cx", settings.nodeRadius + borderWidth * 2 + 40)
+						.attr("cy", settings.nodeRadius + borderWidth * 2 + 40)
+					
+						node_list.push(node.name)
+						console.log(node.name + " added to list")
+					}
+					
+				})
 			}
 //			console.log(node)
 			
@@ -982,7 +1006,7 @@ function redraw(state){
 	console.log(nodes)
 	
 	nodes.each(function(){
-		console.log(this)
+//		console.log(this)
 		this.removeChild(this.childNodes[0])
 	})
 	nodes.each(getChr)
@@ -992,46 +1016,109 @@ function redraw(state){
 
 
 function getLinear(){
-	chr = 'CHR1'
-	var attach = JSON.stringify(node_list.map(function(d, i){
-		return d + "\_" + chr		
-	}))
+//	chr = 'CHR1'
+//	node_list = ["B73", 'ME49', "TGSK", "RAY"]
+	if(document.getElementById('linear')){
+		removeLinearPanel()
+	}	
+	else{
+		
+		createLinearPanel()
+		
+		var length = 900,
+			height = 40,
+			front = 150,
+			padding = [10, 10, 10, 10]
+		
+		var attach = JSON.stringify(node_list.map(function(d, i){
+			return d + "\_" + chr		
+		}))
+		
+		
+		var file = input.match(/[/](\w+?).json/)[1]
+		var e = document.createElementNS("http://www.w3.org/2000/svg", "svg")
+		var svg = d3.select(this).append(function(d){ return e})
+		            
+	//	console.log(node)
+		
+		var path = "./c/" + file + "/" + attach + ".linear"
+		
+		svg.attr("width", length + padding[1] + padding[3])
+		 .attr("height", (height + padding[0] + padding[2]) * node_list.length + 1)
+		
+//		svg.attr("height", (nodeRadius * 2 + borderWidth * 4) * settings.scale + labelAttrs.y)
+//		.attr("width", (nodeRadius * 2 + borderWidth * 4) * settings.scale)
+//		.attr("transform", "scale(" + 1 / scale + ")")
+	//	.attr("transform", "scale(" + 0.1 + ")")
+		
+		getDataURI(path, function(uri){
+			svg.append("image").attr("xlink:href", uri)		
+			document.getElementById('linear_panel').appendChild(e)
+		})
+		
+		
+		
+		function getDataURI(path, callback){
+			var image = new Image()
+			var	data;
+			image.onload = function(){
+				var canvas = document.createElement('canvas')
+				canvas.width = this.naturalWidth
+				canvas.height = this.naturalHeight
+				canvas.getContext('2d').drawImage(this, 0, 0)
+				callback(canvas.toDataURL('image/png'))
+			}
+			
+			image.src = path
 	
-	
-	var file = input.match(/[/](\w+?).json/)[1]
-	var e = document.createElementNS("http://www.w3.org/2000/svg", "svg")
-	var svg = d3.select(this).append(function(d){ return e}).append('g')
-	            
-//	console.log(node)
-	
-	var path = "./c/" + file + "/" + attach + ".linear"
-
-	
-	svg.attr("height", (nodeRadius * 2 + borderWidth * 4) * settings.scale + labelAttrs.y)
-	.attr("width", (nodeRadius * 2 + borderWidth * 4) * settings.scale)
-	.attr("transform", "scale(" + 1 / scale + ")")
-//	.attr("transform", "scale(" + 0.1 + ")")
-	
-	getDataURI(path, function(uri){
-		svg.append("image").attr("xlink:href", uri)		
-	})
-	
-	function getDataURI(path, callback){
-		var image = new Image()
-		var	data;
-		image.onload = function(){
-			var canvas = document.createElement('canvas')
-			canvas.width = this.naturalWidth
-			canvas.height = this.naturalHeight
-			canvas.getContext('2d').drawImage(this, 0, 0)
-			callback(canvas.toDataURL('image/png'))
 		}
 		
-		image.src = path
-
 	}
+}
+
+function createLinearPanel(){
+	
+	var container = document.getElementById('graph_container')
+	var outer = document.createElement('div')
+	var top = document.createElement('div')
+	var tt = document.createElement('div')
+	var main = document.createElement('div')
+	
+	container.append(outer)
+	outer.appendChild(top)
+	top.appendChild(tt)
+	outer.appendChild(main)
 	
 	
+	
+	outer.classList.add("mdl-card")
+	top.classList.add("mdl-card__title")
+//	tt.classList.add("mdl-card__title-text")
+	main.classList.add("mdl-card__media")
+	main.classList.add("mdl-card__border")
+	
+	outer.id = 'linear'
+	outer.style.width = 'fit-content'
+	outer.style.position = 'absolute'
+	outer.style.right = '20px'
+	outer.style.bottom = '80px'
+	outer.style.zIndex = '100'
+	outer.style.border = '1px solid black'
+	outer.style.overflow = 'auto'
+	outer.style.display = 'block'
+	
+	main.id = 'linear_panel'
+	main.style.backgroundColor = 'white' 
+	top.style.height = '10px'
+	top.style.backgroundColor = '#3f51b5'
+
+	tt.style.fontSize = '12pt'	
+	tt.style.color = 'white'
+	tt.innerHTML = "Chromosome Alignment Panel"
+}
+
+function removeLinearPanel(){
+	document.getElementById('graph_container').removeChild(document.getElementById('linear'))
 }
 
     // You could also use the actual string without base64 encoding it:

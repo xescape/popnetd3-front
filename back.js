@@ -315,15 +315,15 @@ function drawLinear(params){
 	var nodes = getMultiNodes(params),
 		colorTable = data.colorTable
 	
-	var length = 600,
-		height = 30,
+	var length = 900,
+		height = 40,
 		front = 150,
 		padding = [10, 10, 10, 10], //top, right, bot, left
 		margin = {top: 20, right: 20, bottom: 30, left: 40},
 		scale = 5
 	
 	var svg = d3n.createSVG()
-				 .attr("width", (length + padding[1] + padding[3]) * scale)
+				 .attr("width", length + padding[1] + padding[3])
 				 .attr("height", (height + padding[0] + padding[2]) * nodes.length + 1)
 				 .append('g')
 			  
@@ -384,9 +384,8 @@ function drawLinear(params){
 		.attr("class", "axis")
 		.call(d3.axisTop(scale))
 	
-    fs.writeFileSync('./asdf.xml', d3n.svgString())
-		
-	return d3n
+    fs.writeFileSync('./asdf.xml', d3n.svgString())   
+    return new Buffer(d3n.svgString(), 'utf-8')
 }
 
 function makeDefaultSettings(path){
