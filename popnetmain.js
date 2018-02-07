@@ -34,10 +34,10 @@ var input = url + "/results/data3.json";
 
 
 //define size of the image element
-var base_width = 1200,
+var base_width = 1280,
 	base_height = 720,
-	width = base_width,
-	height = base_height,
+	width = base_width * 2,
+	height = base_height * 2,
 	margin = 100,
 	scale = 5,
 	nodeRadius = 25,
@@ -101,6 +101,7 @@ var colorTable,
 var svg = d3.select("#graph").append("svg")
 				.attr("width", width)
 				.attr("height", height)
+				.attr("transform", "translate(-" + (width - base_width) / 2 + ",-" + (height - base_height) /2 + ")")
 				.attr("id", "popnet_container")
 	svg.append("rect")
 		.attr("width", width)
@@ -715,7 +716,7 @@ function getChr(node){
 						.attr("r", settings.nodeRadius)
 						.attr("stroke", "yellow")
 						.attr("stroke-width", '20')
-						.attr("cx", settings.nodeRadius + borderWidth * 2 + 40)
+						.attr("cx", 40 + settings.nodeRadius + borderWidth * 2)
 						.attr("cy", settings.nodeRadius + borderWidth * 2 + 40)
 					
 						node_list.push(node.name)
@@ -888,11 +889,13 @@ function groupCircle(simulation, reset = false){
 
 		var x = Math.ceil(Math.sqrt(n)) - 1,
 			ls = [],
-			c = 0;
-			xstep = Math.ceil(width / Math.ceil(Math.sqrt(n))),
-			xstart = Math.ceil(xstep / 2),
-			ystep = Math.ceil(height / Math.ceil(Math.sqrt(n))),
-			ystart = Math.ceil(ystep/2);
+			c = 0,
+			xorigin = (width - base_width) / 2,
+			yorigin = (height - base_height) / 2,
+			xstep = Math.ceil(base_width / Math.ceil(Math.sqrt(n))),
+			xstart = xorigin + Math.ceil(xstep / 2),
+			ystep = Math.ceil(base_height / Math.ceil(Math.sqrt(n))),
+			ystart = yorigin + Math.ceil(ystep/2);
 			
 		for( var i = 0; i <= x; i++){
 			for( var j = 0; j <= x; j++){
@@ -967,12 +970,14 @@ function groupCircle(simulation, reset = false){
 
 function save(){
 	
-	svg = document.getElementById("popnet")
-	doc = new PDFDocument()
+	var target = document.getElementById("popnet")
+	doc = new PDFDocument({
+		size: [width, height]
+	})
 	stream = doc.pipe(blobStream())
 	
 	//add content
-	SVGtoPDF(doc, svg, 0, 0, {useCSS:true})
+	SVGtoPDF(doc, target, 0, 0, {useCSS:true})
 	doc.end()
 	stream.on('finish', function(){
 //		blob = stream.toBlob('application/pdf')
@@ -1083,10 +1088,12 @@ function createLinearPanel(){
 	var top = document.createElement('div')
 	var tt = document.createElement('div')
 	var main = document.createElement('div')
+	var close = document.createElement('button')
 	
 	container.append(outer)
 	outer.appendChild(top)
 	top.appendChild(tt)
+	top.appendChild(close)
 	outer.appendChild(main)
 	
 	
@@ -1109,16 +1116,77 @@ function createLinearPanel(){
 	
 	main.id = 'linear_panel'
 	main.style.backgroundColor = 'white' 
+	top.id = 'linear_header'
 	top.style.height = '10px'
 	top.style.backgroundColor = '#3f51b5'
+//	top.style.position = "relative"
 
 	tt.style.fontSize = '12pt'	
 	tt.style.color = 'white'
 	tt.innerHTML = "Chromosome Alignment Panel"
+	
+	close.innerHTML = '<i class="material-icons">close</i>'
+	close.style.outline = "none"
+	close.style.backgroundColor = "Transparent"
+	close.style.overflow = "hidden"
+	close.style.border = "0px solid black"
+	close.style.position = "absolute"
+	close.style.right = "10px"
+	close.addEventListener('click', removeLinearPanel)
+		
+	dragElement(outer)
 }
 
 function removeLinearPanel(){
 	document.getElementById('graph_container').removeChild(document.getElementById('linear'))
+}
+
+
+function dragElement(elmnt) {
+	  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+	  if (document.getElementById(elmnt.id + "_header")) {
+		/* if present, the header is where you move the DIV from:*/
+		document.getElementById(elmnt.id + "_header").onmousedown = dragMouseDown;
+	  } 
+	  else {
+	    /* otherwise, move the DIV from anywhere inside the DIV:*/
+	    elmnt.onmousedown = dragMouseDown;
+	  }
+	
+	  function dragMouseDown(e) {
+		console.log('trying to drag!')
+	    e = e || window.event;
+	    // get the mouse cursor position at startup:
+		pos3 = e.clientX;
+		pos4 = e.clientY;
+		document.onmouseup = closeDragElement;
+	// call a function whenever the cursor moves:
+	    document.onmousemove = elementDrag;
+	  }
+	
+	  function elementDrag(e) {
+	    e = e || window.event;
+	    // calculate the new cursor position:
+		pos1 = pos3 - e.clientX;
+		pos2 = pos4 - e.clientY;
+		pos3 = e.clientX;
+		pos4 = e.clientY;
+	// set the element's new position:
+		elmnt.style.bottom = (parsepx(elmnt.style.bottom) + pos2) + "px";
+		elmnt.style.right = (parsepx(elmnt.style.right) + pos1) + "px";
+	  }
+	
+	  function closeDragElement() {
+	    /* stop moving when mouse button is released:*/
+		console.log('stopped trying to drag')
+	    document.onmouseup = null;
+	    document.onmousemove = null;
+	  }
+	  
+	  function parsepx(string){
+		  return parseInt(string.substring(0,string.length - 2))
+	  }
+	  
 }
 
     // You could also use the actual string without base64 encoding it:

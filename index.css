@@ -27,9 +27,16 @@
 	display: flex;
 	flex: 1;
 	flex-direction: row;
-	align-items: center;
-	flex-basis: 150px;
+	align-items: left;
+}
+
+.vflex{
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	align-items: left;
 	justify-content: flex-start;
+	width: 300px;
 }
 
 button.tooltip{
@@ -42,6 +49,16 @@ div.entry{
 	flex: 1;
 	flex-basis: 20px;
 	margin: 10px 20px 10px 10px;
+}
+
+.mdl-layout__header.custom{
+	height: 150px;
+	transition: height 0.5s;
+}
+
+.mdl-textfield__label.bar_hack{
+	top: 10px;
+	left: 10px;
 }
 
 #chr_container{
@@ -61,7 +78,8 @@ div.entry{
 	display: flex;
 	/*align-items: center;*/
 	/*justify-content: center;*/
-	background-color: #89D2DC;
+	background-color: white;
+	overflow: scroll;
 }
 
 #viewport{
@@ -77,6 +95,8 @@ div.entry{
 	background-color: white;
 	height: inherit;
 	width: inherit;
+	margin: 0px 200px;
+	border: 0px solid white;
 }
 
 #tab_container{
@@ -85,14 +105,16 @@ div.entry{
 	flex-direction: column;
 	align-items: top;
 	height: inherit;
-	overflow: scroll;
+	
 }
 
 #tab_bar{
 	display: flex;
+	flex-direction: row;
 	order: 0;
-	flex-basis: 50px;
-	height: 30px;
+	max-height: 45px;
+	min-height: 45px;
+	border: 0px solid white;
 }
 
 #config_container{
@@ -107,11 +129,11 @@ div.entry{
 #config{
 	/*flex-shrink: 1;*/
 	margin: auto;
-	/*display: flex;*/
-	/*flex-direction: column;*/
+	display: flex;
+	flex-direction: row;
 	/*justify-content: flex-start;*/
-	/*align-items: left;*/
-	padding: 150px 100px 150px 100px;
+	align-items: top;
+	padding: 0px 100px;
 }
 
 #graph_container{
@@ -131,12 +153,12 @@ div.entry{
 
 
 #graph{
+	height: 720px;
+	width: 1200px;
 	order: 1;
-	flex-grow: 1;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	border-bottom: 2px solid black
+	border-bottom: 2px solid black;
+	overflow: hidden;
+	margin: auto;
 }
 
 #popnet_container{
@@ -163,8 +185,19 @@ div.entry{
 	margin: 0px 50px 0px 50px;
 	display: block;
 	overflow-wrap: break-word;
-	margin-top: 100px;
+	margin-top: 70px;
 	padding: 10px;
+	scroll: disabled;
+	text-align: left;
+}
+
+#sub_ins{
+	font: arial;
+	font-size: 14;
+	width: inherit;
+	margin: 120px 0px 50px 110px;
+	display: block;
+	overflow-wrap: break-word;
 	scroll: disabled;
 	text-align: left;
 }
