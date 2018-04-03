@@ -90,6 +90,7 @@ function checkid(id){
 		if(line.split(",")[0] === id){
 			return false
 		}
+		
 	}
 	return true
 }

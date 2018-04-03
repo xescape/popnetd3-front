@@ -28,7 +28,7 @@
   <header class="mdl-layout__header custom" id = "header">
     <div class="mdl-layout__header-row">
       <!-- Title -->
-      <span class="mdl-layout-title">PopNet</span>
+      <!-- <span class="mdl-layout-title">PopNet</span> -->
       <!-- Add spacer, to align navigation to the right -->
       <div class="mdl-layout-spacer"></div>
       <!-- Navigation. We hide it in small screens. -->
@@ -49,7 +49,7 @@
    
   <main class="mdl-layout__content" id="container">
   
-  	<div class="mdl-card mdl-shadow--2dp" id="viewport">
+  	<div class="mdl-card mdl-shadow--16dp" id="viewport">
   	
 	   	<div class= "mdl-tabs mdl-js-tabs" id = "tab_container">
 	   
@@ -57,12 +57,20 @@
 		   		<a href = "#landing_panel" class = "mdl-tabs__tab is-active" id = "landing_tab_button"> Welcome </a>
 		   		<a href = "#config_panel" class = "mdl-tabs__tab" id = "config_tab_button"> Submit Job </a>
 		   		<a href = "#graph_panel" class = "mdl-tabs__tab" id = "graph_tab_button"> Visualization </a>
+		   		<a href = "#tutorial_panel" class = "mdl-tabs__tab" id = "tutorial_tab_button"> Tutorial </a>
 		   	</div>
 	    	
 	    	<div class = "mdl-tabs__panel is-active" id="landing_panel">
 	    		<div class = "page-content" id = "landing">
 	    			<span id = "ins1"></span>
+	    			<div><image id = "sideimg" src="bin/image.png" alt="example network"></div>
 	    		</div>    	
+	    	</div>
+	    	
+	    	<div class = "mdl-tabs__panel" id="tutorial_panel">
+	    	
+	    		<div class = "page-content" id="tutorial"></div>
+	    	
 	    	</div>
 	    	
 	    	<div class = "mdl-tabs__panel" id="config_panel">

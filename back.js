@@ -130,9 +130,14 @@ function parseParams(req){
 //	console.log('./' + params['file'] + '.json')
 	var dir = './c/' + params['file']
 	
-	var id_split = params['id'].split("_")
-	params['id'] = id_split[0]
-	params['chr'] = id_split[1]
+	var format = /(.+?)_(all|CHR.+?)$/
+	
+//	var id_split = params['id'].split("_")
+	var match = params['id'].match(format)
+	
+	params['id'] = match[1]
+	params['chr'] = match[2]
+
 	
 	if(!fs.existsSync(dir)){
 		fs.mkdirSync(dir)
@@ -161,11 +166,21 @@ function parseLinearParams(req){
 	var params = req.params
 	var dir = './c/' + params['file']
 	
-	var id_split = JSON.parse(params['list'])[0].split("_")
-	params['chr'] = id_split[1]
+	var format = /(.+?)_(all|CHR.+?)$/
+	var raw_names = JSON.parse(req.params['list'])
+		
+
+	var match = raw_names[0].match(format)
+
+
+	params['chr'] = match[2]
 	
-	var raw_names = JSON.parse(req.params['list']).map(function(d){return d.split("_")[0]})
-	params['names'] = raw_names
+
+	params['names'] = raw_names.map(function(d){
+		
+		return d.match(format)[1]
+		
+	})
 	
 	var path = './results/' + params['file'] + '.json'
 	if(params['file'] != file){
@@ -220,8 +235,16 @@ function getMultiNodes(params){
 
 function getChr(node, chr){
 
-	var format = /CHR([0-9]+)$/,
-	n = format.exec(chr)[1]
+//	console.log('node is ' + node)
+//	console.log('chr is ' + chr)
+	
+	var format = /CHR([0-9]+)$/
+	try{
+		var n = format.exec(chr)[1]
+	}
+	catch(e){
+		n = 1
+	}
 
 	var inds = []
 	for(i = 0; i < node.ids.length; i++){
@@ -254,10 +277,11 @@ function paintChr(node, colorTable, outpath, mode = 'PNG'){
 	
 	svg = d3n.createSVG()
 			.attr("width", (nodeRadius + borderWidth * 2) * 2)
-			.attr("height", (nodeRadius + borderWidth * 2) * 2 + settings.labelAttrs.y)
+			.attr("height", (nodeRadius + borderWidth * 2) * 2 + settings.labelAttrs['font-size'])
 			.attr("name", node.name)
 			.append("g")
 				.attr("transform", "translate(" + (nodeRadius + borderWidth * 2) + "," + (nodeRadius + borderWidth * 2)  + ")");
+	console.log('height is ' + (nodeRadius + borderWidth * 2) * 2 + settings.labelAttrs['font-size'])
 	
 	var	arc = d3.arc()
 		.outerRadius(nodeRadius - 10)
@@ -317,13 +341,13 @@ function drawLinear(params){
 	
 	var length = 900,
 		height = 40,
-		front = 150,
+		front = 300,
 		padding = [10, 10, 10, 10], //top, right, bot, left
-		margin = {top: 20, right: 20, bottom: 30, left: 40},
+		margin = {top: 20, right: 80, bottom: 30, left: 80},
 		scale = 5
 	
 	var svg = d3n.createSVG()
-				 .attr("width", length + padding[1] + padding[3])
+				 .attr("width", length + padding[1] + padding[3] + front)
 				 .attr("height", (height + padding[0] + padding[2]) * nodes.length + 1)
 				 .append('g')
 			  
@@ -406,7 +430,7 @@ function makeDefaultSettings(path){
 		},	
 		labelAttrs : {
 			'x' : 0,
-			'y' : nodeRadius + 20 * scale, //offsize same as fontsize?
+			'y' : (nodeRadius + 10) * scale, //offsize same as fontsize?
 			'font-size': 14 * scale + "pt",
 			'font-family': 'Arial',
 			'text-anchor': 'middle',

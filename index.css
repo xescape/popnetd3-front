@@ -61,6 +61,19 @@ div.entry{
 	left: 10px;
 }
 
+body{
+}
+
+#landing{
+	display:flex;
+	flex-direction:row;
+}
+
+#sideimg{
+	order:1;
+	margin: 100px 50px 0px 10px;
+}
+
 #chr_container{
 	padding: 5px;
 }
@@ -79,7 +92,7 @@ div.entry{
 	/*align-items: center;*/
 	/*justify-content: center;*/
 	background-color: white;
-	overflow: scroll;
+
 }
 
 #viewport{
@@ -93,8 +106,8 @@ div.entry{
 	text_align: center;
 	/*border: 5px solid white;*/
 	background-color: white;
-	height: inherit;
 	width: inherit;
+	height: 1000px;
 	margin: 0px 200px;
 	border: 0px solid white;
 }
@@ -182,13 +195,13 @@ div.entry{
 	font: arial;
 	font-size: 14;
 	width: inherit;
-	margin: 0px 50px 0px 50px;
+	margin: 50px 10px 0px 50px;
 	display: block;
 	overflow-wrap: break-word;
-	margin-top: 70px;
 	padding: 10px;
 	scroll: disabled;
 	text-align: left;
+	order:0
 }
 
 #sub_ins{
@@ -200,4 +213,13 @@ div.entry{
 	overflow-wrap: break-word;
 	scroll: disabled;
 	text-align: left;
+}
+
+#header{
+	background-image: url('bin/banner.png');
+	background-position: bottom;
+}
+
+#tutorial{
+	padding: 20px 100px;
 }

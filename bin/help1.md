@@ -4,6 +4,8 @@ This is the D3-based implementation of PopNet, an analysis and visualization too
 the simple, streamlined analysis of your population of interest without the hassel of linux, programming, or external packages.
 Popnet-D3 employs the D3 package to produce robust visualizations that facilitate the discovery of inter- and intra-species genetic relationships. 
 
+####Quick Start Guide####
+
 **Running a Job**
 
 The 'Submit Job' tab lets you submit a data to our server to be analyzed by PopNet. Please refer to the tool tip in each section 
@@ -19,6 +21,11 @@ Each circle of nodes is one group, representing one subpopulation or lineage.
 Drag the nodes to reposition them, or drag the dots to reposition entire groups.
 Drag the background to move the view, and use the sroll wheel to zoom in/out. 
 
+**More Information**
 
+For a detailed guide on PopNetD3 functions, go to the Tutorial Tab. 
 
+**Citation**
+
+Javi Zhang, Asis Khan, Andrea Kennard, Michael E. Grigg, John Parkinson; PopNet: A Markov Clustering Approach to Study Population Genetic Structure, Molecular Biology and Evolution, Volume 34, Issue 7, 1 July 2017, Pages 1799–1811, https://doi.org/10.1093/molbev/msx110
 

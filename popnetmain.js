@@ -49,6 +49,7 @@ var base_width = 1280,
 
 var labelAttrs = {
 	'x' : 0,
+//	'y' : (10) * scale, //offsize same as fontsize?
 	'y' : (nodeRadius + 20) * scale, //offsize same as fontsize?
 	'font-size': 11 * scale,
 	'font-family': 'Arial',
@@ -404,7 +405,7 @@ function draw(data){
 	var edges = container.append("g")
 	.attr("class", "link")
 		.selectAll(".link")
-		.data(data.edges).enter()
+		.data(minEdges(data.edges, 0.5)).enter()
 		.append('line');
 	attachAttr(edges, edgeAttrs);
 	
@@ -648,21 +649,27 @@ function getChr(node){
 	
 	var file = input.match(/[/](\w+?).json/)[1]
 	var e = document.createElementNS("http://www.w3.org/2000/svg", "svg")
-	var svg = d3.select(this).append(function(d){ return e}).append('g')
-	            .attr("name", node.name)
+	var svg = d3.select(this).append(function(d){ return e}).attr("name", node.name)
 //	console.log(node)
 	
 	var path = "./c/" + file + "/" + node.name + "\_" + chr + ".png"
 	var svgpath = "./c/" + file + "/" + node.name + "\_" + chr + ".svg"
 	var ref_this = this
 	
-	svg.attr("height", (nodeRadius * 2 + borderWidth * 4) * settings.scale + labelAttrs.y)
-	.attr("width", (nodeRadius * 2 + borderWidth * 4) * settings.scale)
+	svg.attr("height", (nodeRadius * 2 + borderWidth * 4) * scale + + labelAttrs['font-size'])
+	.attr("width", (nodeRadius * 2 + borderWidth * 4) * scale)
+	
+	
+	
+	var g = svg.append('g')
 	.attr("transform", "scale(" + 1 / scale + ")")
 //	.attr("transform", "scale(" + 0.1 + ")")
 	
 	getDataURI(path, function(uri){
-		svg.append("image").attr("xlink:href", uri)
+		g.append("image")
+		 .attr("xlink:href", uri)
+		 .attr("width", (nodeRadius * 2 + borderWidth * 4) * scale)
+		 .attr("height", (nodeRadius * 2 + borderWidth * 4) * scale + labelAttrs['font-size'])
 		
 		var svgtext = $.get(svgpath, function(){
 			svgdom = domparser.parseFromString(svgtext.responseText, "image/svg+xml").querySelectorAll("[name='" + node.name + "']")[0]
@@ -678,12 +685,13 @@ function getChr(node){
 
 				var zzz = _.range(arcs.length)
 
-				var arc_nodes = svg.append(function(d){return archeader;})
+				var arc_nodes = g.append(function(d){return archeader;})
 								.selectAll('.arcs').data(zzz)
 								.enter()
 								.append(function(e){
 									return arcs[e];
 								})
+//								.attr("transform", "scale(" + 1 / scale + ")")
 
 								
 				arc_nodes.each(function(d, i){
@@ -702,7 +710,7 @@ function getChr(node){
 	
 			}
 			else{
-				svg.on("click", function(){
+				g.on("click", function(){
 					
 					if($.inArray(node.name, node_list) >= 0){
 						d3.select(this).selectAll(".selected").remove()
@@ -859,7 +867,7 @@ function groupCircle(simulation, reset = false){
 		//calculated x positions in a circle around the center
 		//when each node has a certain radius
 		
-		var r = Math.max(n * (nodeRadius + 20) / (2 * Math.PI), 2 * (nodeRadius + 20))
+		var r = Math.max(n * (nodeRadius * 2 + borderWidth * 4) / (2 * Math.PI), 2 * (nodeRadius + 20))
 		return _.range(n).map(function(i){
 			return {
 				x: g.x + r * Math.cos(2 * Math.PI * i / n) - nodeRadius - 10,
@@ -1032,7 +1040,8 @@ function getLinear(){
 		
 		var length = 900,
 			height = 40,
-			front = 150,
+			front = 300,
+			margin = {top: 20, right: 80, bottom: 30, left: 80},
 			padding = [10, 10, 10, 10]
 		
 		var attach = JSON.stringify(node_list.map(function(d, i){
@@ -1048,8 +1057,8 @@ function getLinear(){
 		
 		var path = "./c/" + file + "/" + attach + ".linear"
 		
-		svg.attr("width", length + padding[1] + padding[3])
-		 .attr("height", (height + padding[0] + padding[2]) * node_list.length + 1)
+		svg.attr("width", length + padding[1] + padding[3] + front + margin.left + margin.right)
+		 .attr("height", (height + padding[0] + padding[2]) * node_list.length + 1 + margin.top + margin.bottom)
 		
 //		svg.attr("height", (nodeRadius * 2 + borderWidth * 4) * settings.scale + labelAttrs.y)
 //		.attr("width", (nodeRadius * 2 + borderWidth * 4) * settings.scale)
@@ -1186,9 +1195,19 @@ function dragElement(elmnt) {
 	  function parsepx(string){
 		  return parseInt(string.substring(0,string.length - 2))
 	  }
-	  
+
 }
 
+function minEdges(array, min){
+	  for(i in _.range(array.length)){
+		  
+		  if(array[i].width <= min){
+			  array[i].width = min
+		  }
+	  }
+
+	  return array
+}
     // You could also use the actual string without base64 encoding it:
     //img.src = "data:image/svg+xml;utf8," + svgStr;
 
