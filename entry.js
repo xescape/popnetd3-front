@@ -9,7 +9,7 @@ const app = express()
 const bodyParser = require('body-parser')
 //const ada = require('./adapter.js')
 
-
+app.set('trust proxy', 'loopback')
 app.get('/', function (req, res) {
   res.redirect('/index.html')
 })

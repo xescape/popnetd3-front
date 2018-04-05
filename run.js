@@ -11,7 +11,7 @@ var multer = require("multer")
 var upload = multer()
 
 var dir = "./data"
-var absdir = "/home/javi/workspace/popnetd3-front/data"
+var absdir = "/etc/www/popnetd3-front/data"
 var results = "./results"
 var ids = './ids.txt'
 var baseconfig = './bin/baseconfig.txt'
