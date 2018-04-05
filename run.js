@@ -16,7 +16,8 @@ var results = "./results"
 var ids = './ids.txt'
 var baseconfig = './bin/baseconfig.txt'
 var execpath = './popnet/PopNet.py'
-
+	
+	
 var cpUpload = upload.fields([{name: 'species', maxCount: 1}, {name: 'format', maxCount: 1}, 
 								{name: 'reference', maxCount: 1},{name: 'ival', maxCount: 1},
 								{name: 'pival', maxCount: 1},{name: 'sl', maxCount: 1},
@@ -38,7 +39,7 @@ function run(req, res){
 		fs.writeFileSync(ids, "")
 	}
 	
-	var id = makeid(6),
+	var id = makeid(8),
 		config = req.body,
 		data = req.files.file[0],
 		folderpath = dir + "/" + id,
@@ -46,12 +47,8 @@ function run(req, res){
 		filepath = folderpath + ".tsv",
 		configpath = folderpath + "_config.txt"
 	
-//	while(checkid){
-//		id = makeid(6)
-//	}
-
-//	console.log(data)
-		
+	console.log('Initiated job ' + id)	
+	
 	fs.appendFileSync(ids, id + "," + data.originalname + "\n", encoding='utf8')
 	fs.writeFileSync(filepath, data.buffer, 'utf-8')
 	makeConfig(config, id, absfolderpath, configpath)
@@ -66,12 +63,12 @@ function run(req, res){
 		fs.rename(oldpath, newpath, function(){
 			console.log("Job " + id + " complete.")
 		})
-		console.log(stdout + stederr)
 		
-	})
-	
-	console.log('end of run function')
-	
+		exec("echo '" + makeEmailMessage(id) + "' | mail -s 'PopNetD3 Job Complete' " + config['email'])
+		
+		console.log('email sent to ' + config['email'])
+		
+	})	
 }
 
 function makeid(n) {
@@ -124,4 +121,14 @@ function makeConfig(config, id, folderpath, configpath){
 	
 }
 
+<<<<<<< HEAD
 module.exports = router
+=======
+function makeEmailMessage(id){
+	
+	return "Hello,\n\nYour PopNet job has completed. Please use the JobID '" + id + "'in the visualization tab of the website to retreive your results.\n\nThank you for using PopNetD3!"
+	
+}
+
+module.exports = router
+>>>>>>> 9da7569766fa6bd997411b258f9c00915255c21d

@@ -2,6 +2,18 @@
  * helper file for various webpage things
  */
 
+
+
+//var helppath = "http:www.compsysbio.org/popnet/bin/help1.md"
+var helppath = "/bin/help1.md"
+var subhelppath = "/bin/subhelp.md"
+showMD(document.getElementById('ins1'), helppath)
+showMD(document.getElementById('sub_ins'), subhelppath)
+
+document.getElementById("graph_tab_button").addEventListener('click', shrinkBanner)
+document.getElementById("config_tab_button").addEventListener('click', growBanner)
+document.getElementById("landing_tab_button").addEventListener('click', growBanner)
+
 function showMD(e, file)
 {
     var request = new XMLHttpRequest();
@@ -17,5 +29,15 @@ function showMD(e, file)
     request.send(null);
 }
 
-var helppath = "http://www.compsysbio.org/popnetd3/bin/help1.md"
+
+var helppath = "http://www.compsysbio.org/popnetd3/bin/help1.md
 showMD(document.getElementById('ins1'), helppath)
+
+function shrinkBanner(){
+	document.getElementById("header").style.height = "50px"
+}
+
+function growBanner(){
+	document.getElementById("header").style.height = "150px"
+}
+>>>>>>> 9da7569766fa6bd997411b258f9c00915255c21d
