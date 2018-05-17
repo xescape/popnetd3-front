@@ -29,7 +29,7 @@
  */
 
 //TODO: User defined variables
-var url = "http://calyptospora:3000"
+var url = "http://kali:3000"
 var input = url + "/results/data3.json";
 
 
@@ -58,8 +58,8 @@ var labelAttrs = {
 }
 
 var edgeAttrs = {
-	"stroke": 'black',
-	'stroke-width': function(d){return d.width / 3}
+	"stroke": 'grey',
+	'stroke-width': function(d){return translateEdge(d.width) + "px"}
 }
 
 var invisEdgeAttrs = {
@@ -120,6 +120,19 @@ var chrn
 var draw_state
 var node_list = []
 
+var cutoff = 0.5
+var edge_weights = {
+	
+	0.90: 8,
+	0.80: 4,
+	0.70: 2,
+	0.50: 1,
+	0.25: 1,
+	0: 1
+	
+}
+var edge_weight_keys = Object.keys(edge_weights)
+
 document.getElementById("chr").addEventListener("change", function(){
 //	console.log(document.getElementById("chr").getAttribute("data-val"))
 	chr = document.getElementById("chr2").value;
@@ -129,6 +142,14 @@ document.getElementById("chr").addEventListener("change", function(){
 //	console.log(document.getElementById("chr2"))
 })
 
+document.getElementById("edge").addEventListener("change", function(){
+//	console.log(document.getElementById("chr").getAttribute("data-val"))
+	cutoff = document.getElementById("edge2").value;
+//	svg.html("")
+//	d3.json(input, draw)
+	draw_state = redrawEdges(draw_state, cutoff)
+//	console.log(document.getElementById("chr2"))
+})
 
 document.getElementById("button-reset").addEventListener("click", function(){
 	svg.html("")
@@ -214,7 +235,7 @@ function draw(data){
 	//prep for chr zooming
 	chr_count = countChrs(data.nodes[0].ids)
 	updateChrs(chr_count)
-	
+	updateEdgeCutoff()
 	
 	//bind forces
 	simulation = d3.forceSimulation()
@@ -442,7 +463,8 @@ function draw(data){
 	
 	return {
 		simulation: simulation,
-		nodes: nodes
+		nodes: nodes,
+		edges: edges
 	}
 
 //	console.log(document.getElementById('chr').value)
@@ -532,6 +554,7 @@ function draw(data){
 	}
 }
 
+
 function updateChrs(n){
 	chrn = n
 	
@@ -546,6 +569,19 @@ function updateChrs(n){
 	getmdlSelect.init('.getmdl-select')
 }
 
+
+function updateEdgeCutoff(){
+	var all = "<li class=\"mdl-menu__item\" data-val=\"0.5\">Default(0.5)</li>\n"
+		
+	var html = Object.keys(edge_weights).map(function(val){
+		return "<li class=\"mdl-menu__item\" data-val=\"" + val + "\">" + val + "</li>\n"
+	}).join('')
+	
+	document.getElementById('edge_select').innerHTML = all + html;
+	getmdlSelect.init('.getmdl-select')
+}
+
+
 function countChrs(ids){
 	var n = ids.reduce(function(total, curr){
 				
@@ -557,9 +593,31 @@ function countChrs(ids){
 		}
 	}, 0)
 	
-	return n
+	return n	
 }
 
+function translateEdge(p){
+	
+	var a = edge_weight_keys.map(function(a){return Math.abs(parseFloat(a) - p)})
+	var b = a.indexOf(Math.min(...a))
+	
+//	console.log('value ' + p + ' translated to ' + edge_weights[edge_weight_keys[b]])
+	
+	return edge_weights[edge_weight_keys[b]]
+	
+}
+
+function redrawEdges(state, cutoff){
+	
+	console.log('cut off is ' + cutoff)
+	
+	state.edges.attr('visibility', 'hidden')
+	
+	state.edges.filter(function(d){ return d.width > cutoff}).attr('visibility', 'visible')
+	
+	return state
+	
+}
 
 //console.log('beep')
 //console.log(simulation.nodes().filter(function(d){
@@ -596,8 +654,7 @@ function boundy(i){ //keeps nodes in the boundaries
 		return height - 2 * nodeRadius - labelAttrs['font-size'];
 	}
 	return i
-		
-	}
+}
 
 function appendSVG(node){
 	console.log(node)
