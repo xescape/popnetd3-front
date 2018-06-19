@@ -9,22 +9,26 @@
 <script src="pdfkit.js"></script>
 <script src='topdf.js'></script>
 <script src='blob-stream.js'></script>
-<script src="/node_modules/markdown/lib/markdown.js"></script>
+<script src="./node_modules/markdown/lib/markdown.js"></script>
 <link rel="stylesheet" href="index.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
 <link rel=stylesheet href="https://s3-us-west-2.amazonaws.com/colors-css/2.2.0/colors.min.css">
-<link rel="stylesheet" href="https://cdn.rawgit.com/CreativeIT/getmdl-select/master/getmdl-select.min.css">
-<script defer src="https://cdn.rawgit.com/CreativeIT/getmdl-select/master/getmdl-select.min.js"></script>
+
+<link rel="stylesheet" href="./node_modules/getmdl-select/getmdl-select.min.css">
+
+<script defer src="./node_modules/getmdl-select/getmdl-select.min.js"></script>
+
 <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+
 </head>
 <body>
 <!-- Always shows a header, even in smaller screens. -->
 <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
-  <header class="mdl-layout__header">
+  <header class="mdl-layout__header custom" id = "header">
     <div class="mdl-layout__header-row">
       <!-- Title -->
-      <span class="mdl-layout-title">PopNet</span>
+      <!-- <span class="mdl-layout-title">PopNet</span> -->
       <!-- Add spacer, to align navigation to the right -->
       <div class="mdl-layout-spacer"></div>
       <!-- Navigation. We hide it in small screens. -->
@@ -33,128 +37,175 @@
       </nav>
     </div>
   </header>
+  
+  <!-- 
   <div class="mdl-layout__drawer">
-  <!--  make one of these two invisible at all times. -->
     <div class="mdl-card" id="menu">
 	    <span class="mdl-layout-title" id="ins1">
     	</span>
     </div>
   </div>
-  
+  -->
+   
   <main class="mdl-layout__content" id="container">
   
-  	<div class="mdl-card mdl-shadow--2dp" id="viewport">
+  	<div class="mdl-card mdl-shadow--16dp" id="viewport">
   	
 	   	<div class= "mdl-tabs mdl-js-tabs" id = "tab_container">
 	   
 		   	<div class = "mdl-tabs__tab-bar" id = "tab_bar">
-		   		<a href = "#config_panel" class = "mdl-tabs__tab is-active"> Configuation </a>
-		   		<a href = "#graph_panel" class = "mdl-tabs__tab"> Graph </a>
+		   		<a href = "#landing_panel" class = "mdl-tabs__tab is-active" id = "landing_tab_button"> Welcome </a>
+		   		<a href = "#config_panel" class = "mdl-tabs__tab" id = "config_tab_button"> Submit Job </a>
+		   		<a href = "#graph_panel" class = "mdl-tabs__tab" id = "graph_tab_button"> Visualization </a>
+		   		<a href = "#tutorial_panel" class = "mdl-tabs__tab" id = "tutorial_tab_button"> Tutorial </a>
 		   	</div>
 	    	
-	    	<div class = "mdl-tabs__panel is-active" id="config_panel">
+	    	<div class = "mdl-tabs__panel is-active" id="landing_panel">
+	    		<div class = "page-content" id = "landing">
+	    			<span id = "ins1"></span>
+	    			<div><image id = "sideimg" src="bin/image.png" alt="example network"></div>
+	    		</div>    	
+	    	</div>
 	    	
-	    		<div class = "page-content" id = "config">
-	    			
-	    			<div id = "buffer"></div>
+	    	<div class = "mdl-tabs__panel" id="tutorial_panel">
+	    	
+	    		<div class = "page-content" id="tutorial"></div>
+	    	
+	    	</div>
+	    	
+	    	<div class = "mdl-tabs__panel" id="config_panel">
 	    		
-					<div class = "hflex">
-					
-    					<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label getmdl-select entry">
-					    	<input class="mdl-textfield__input" id="species" name="species" value="Plasmodium(Default)" type="text" readonly tabIndex="-1" data-val="pla"/>
-					    		<label class="mdl-textfield__label" for="country">Species</label>
+	    		<p id = "sub_ins"></p>
+	    		
+	    		<div class = "page-content" id = "config">
+					<div class = "vflex">
+						<div class = "hflex">
+	    					<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label getmdl-select entry">
+						    	<input class="mdl-textfield__input" id="species" value="" type="text" readonly>
+						    	<input type="hidden" value="" name="species">
+						    	<i class="mdl-icon-toggle__label material-icons">keyboard_arrow_down</i> 
+					    		<label class="mdl-textfield__label" for="species">Species</label>
 					       		<ul class="mdl-menu mdl-menu--bottom-left mdl-js-menu" for="species">
-					         		<li class="mdl-menu__item" data-val="pla">Plasmodium(Default)</li>
+					         		<li class="mdl-menu__item" data-val="pla" data-selected="true">Plasmodium(Default)</li>
 					         		<li class="mdl-menu__item" data-val="tox">Toxoplasma</li>
 					         		<li class="mdl-menu__item" data-val="sac">Saccharomyces</li>
 					       		</ul>
-						</div>
-					   
-					   	<button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored tooltip" id="button-help">
-	    					<i class = 'material-icons'>help</i>
-	    				</button>
-					 
-						<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label getmdl-select entry">
-					   		<input class="mdl-textfield__input" id="input" name="input" value="Tabular(Default)" type="text" readonly tabIndex="-1" data-val="tab"/>
-					       		<label class="mdl-textfield__label" for="country">Input Format</label>
-					       		<ul class="mdl-menu mdl-menu--bottom-left mdl-js-menu" for="input">
-					         		<li class="mdl-menu__item" data-val="tab">Tabular(Default)</li>
-					         		<li class="mdl-menu__item" data-val="nuc">Nucmer(In Development)</li>
-					       		</ul>
-						</div>
+							</div>
 
-						<button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored tooltip" id="button-help">
-	    					<i class = 'material-icons'>help</i>
-	    				</button>
+						   	<button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored tooltip" id="button-help">
+		    					<i class = 'material-icons' id='help1'>help</i>
+		    					<div class = "mdl-tooltip" for="help1">Affects chromosome name parsing. Choose Plasmodium for all other species.</div>
+		    				</button>
+						</div>
+						
+						<div class = "hflex">						
+							<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label getmdl-select entry">
+						   		<input class="mdl-textfield__input" id="input" value="" type="text" readonly>
+						   		<input type="hidden" value="" name="input">
+						    	<i class="mdl-icon-toggle__label material-icons">keyboard_arrow_down</i> 
+						       		<label class="mdl-textfield__label" for="input">Input Format</label>
+						       		<ul class="mdl-menu mdl-menu--bottom-left mdl-js-menu" for="input">
+						         		<li class="mdl-menu__item" data-val="tab" data-selected="true">Tabular(Default)</li>
+						         		<li class="mdl-menu__item" data-val="nuc">Nucmer(In Development)</li>
+						       		</ul>
+							</div>
+						
+							<button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored tooltip" id="button-help">
+		    					<i class = 'material-icons' id = 'help2'>help</i>
+		    					<div class = "mdl-tooltip" for="help2"> We currently only accept tabular format. Please see welcome page for example. </div>
+		    				</button>
+	    				</div>
   
-	  					<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label entry">
-	    					<input class="mdl-textfield__input" type="text" id = "reference" />
-	    					<label class="mdl-textfield__label" for="reference"> Reference Sample </label>
-	    				</div>
-					</div>
-					
-    				
-
+						<div class = "hflex">
+		  					<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label entry">
+		    					<input class="mdl-textfield__input" type="text" id = "reference" />
+		    					<label class="mdl-textfield__label" for="reference"> Reference Sample </label>
+		    				</div>
 		    				
-		    		<div class = 'hflex'>	
-		    			<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label entry">
-	    					<input class="mdl-textfield__input" type="text" id = "ival" />
-	    					<label class="mdl-textfield__label" for="reference"> I Value </label>
+		    				<button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored tooltip" id="button-help">
+		    					<i class = 'material-icons' id = 'help3'>help</i>
+		    					<div class = "mdl-tooltip" for="help3"> Enter a name only if your input table has a REF column. Otherwise put 'None' </div>
+		    				</button>
+ 						</div>	    					    				
+					</div>
+		
+		    		<div class = 'vflex'>
+		    			<div class = "hflex">
+			    			<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label entry">
+		    					<input class="mdl-textfield__input" type="text" id = "ival" />
+		    					<label class="mdl-textfield__label" for="reference"> I Value </label>
+		    				</div>
 	    				</div>
-	    				
-	    				<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label entry">
-	    					<input class="mdl-textfield__input" type="text" id = "pival" />
-	    					<label class="mdl-textfield__label" for="reference"> pI Value </label>
+	    				<div class = "hflex">
+		    				<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label entry">
+		    					<input class="mdl-textfield__input" type="text" id = "pival" />
+		    					<label class="mdl-textfield__label" for="reference"> pI Value </label>
+		    				</div>
 	    				</div>
-	    				
-	    				<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label entry">
-	    					<input class="mdl-textfield__input" type="text" id = "sl" />
-	    					<label class="mdl-textfield__label" for="reference"> Section Length </label>
+	    				<div class = "hflex">
+		    				<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label entry">
+		    					<input class="mdl-textfield__input" type="text" id = "sl" />
+		    					<label class="mdl-textfield__label" for="reference"> Section Length </label>
+		    				</div>
+		    				
+		    				<button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored tooltip" id="button-help">
+		    					<i class = 'material-icons' id = 'help4'>help</i>
+		    					<div class = "mdl-tooltip" for="help4"> Recommended values to try are I = 4, pI = 1.5, length = 10000 </div>
+		    				</button>
 	    				</div>
-	    				
-	    				<button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored tooltip" id="button-help">
-	    					<i class = 'material-icons'>help</i>
-	    				</button>
 	    			</div>
 	    			
-    				<div class = 'hflex'>
+    				<div class = 'vflex'>
 	   				 	<form>
-							<div class="mdl-textfield mdl-js-textfield mdl-textfield--file">
-								<input class="mdl-textfield__input" placeholder="File" type="text" id="uploadFile" readonly/>
-								<div class="mdl-button mdl-button--primary mdl-button--icon mdl-button--file">
-								  	<i class="material-icons">attach_file</i><input type="file" id="uploadBtn">
+							<div class = "hflex">
+								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label entry">
+		    						<input class="mdl-textfield__input" type="text" pattern=".+[@].+[.].+" id = "email" />
+		    						<label class="mdl-textfield__label" for="reference"> Email Address </label>
+		    						<span class="mdl-textfield__error">Please enter a valid email</span>
+		    					</div>
+		    					<button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored tooltip" id="button-help">
+		    						<i class = 'material-icons' id = 'help5'>help</i>
+		    						<div class = "mdl-tooltip" for="help5"> Please upload the aligned SNP table, and enter an email address to receive the job completion notice.</div>
+		    					</button>
+	    					</div>
+	   				 		<div class = "hflex">
+								<div class="mdl-textfield mdl-js-textfield mdl-textfield--file">
+									<input class="mdl-textfield__input" placeholder="File" type="text" id="uploadFile" readonly/>
+									<div class="mdl-button mdl-button--primary mdl-button--icon mdl-button--file">
+									  	<i class="material-icons">attach_file</i><input type="file" id="uploadBtn">
+									</div>
 								</div>
 							</div>
-							<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label entry">
-	    						<input class="mdl-textfield__input" type="text" pattern=".+[@].+[.].+" id = "email" />
-	    						<label class="mdl-textfield__label" for="reference"> Email Address </label>
-	    						<span class="mdl-textfield__error">Please enter a valid email</span>
-	    					</div>
 						</form>
-    				</div>
-    			
-					<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="submit">
-						Submit
-					</button>
-	    			
-	    		</div>
-	    		
+						<div class = "hflex">
+							<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="submit">
+								Submit
+							</button>
+						</div>						
+					</div>	
+	    		</div>	    		
 	    	</div>
     	
 	    	<div class = "mdl-tabs__panel" id="graph_panel">
-	    		<div class = "page-content" id = "graph_container">
+	    		<div class = "page-content" id = "graph_container">		
 		    		<div class = "page-content" id = "fileselect">
+		    			<div class="example_block" id="ex_block1"></div>
 		    			<form action = "#">
 		    				<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 		    					<input class="mdl-textfield__input" type="text" id="jobid">
 		    					<label class="mdl-textfield__label" for="jobid">Job ID</label>
 		    				</div>
 		    			</form>
-		    			<button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored" id="button-launch">
+		    			<button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored" id="launch">
 		    				<i class = 'material-icons'>arrow_forward</i>
 		    			</button>
+		    			<div class="example_block" id="ex_block2">
+			    			<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="example">
+								Example
+							</button>
+			    		</div>
 		    		</div>
-		    		
+
 		    		<div class="page-content" id="graph"></div>
 			    	<div class="page-content" id="bar">
 		    			<button class="mdl-button mdl-js-button mdl-button--icon" id="button-save">
@@ -164,9 +215,35 @@
 			    		<button class="mdl-button mdl-js-button mdl-button--icon" id="button-reset">
 		  					<i class="material-icons">refresh</i>
 						</button>
-			    		<button class="mdl-button mdl-js-button mdl-button--icon" id="button-force">
+						
+			    		<!-- <button class="mdl-button mdl-js-button mdl-button--icon" id="button-force">
 		  					<i class="material-icons">play_circle_outline</i>
+						</button>  -->
+						
+						<button class="mdl-button mdl-js-button mdl-button--icon" id="button-linear">
+		  					<i class="material-icons">reorder</i>
 						</button>
+
+						<div class="mdl-textfield mdl-js-textfield getmdl-select getmdl-select" id="chr_container">
+					   		<input class="mdl-textfield__input" id="chr" value="" type="text" readonly>
+					   		<input type="hidden" value="" name="chr" id="chr2">
+					    	<i class="mdl-icon-toggle__label material-icons">keyboard_arrow_down</i> 
+				       		<label class="mdl-textfield__label bar_hack" for="chr">Select Chromosome</label>
+				       		<ul class="mdl-menu mdl-menu--top-left mdl-js-menu" for="chr" id = 'chr_select'>
+				         		<li class="mdl-menu__item" data-val="all">All</li>
+				       		</ul>
+						</div>
+						
+						<div class="mdl-textfield mdl-js-textfield getmdl-select getmdl-select" id="edge_container">
+					   		<input class="mdl-textfield__input" id="edge" value="0.5" type="text" readonly>
+					   		<input type="hidden" value="0.5" name="edge" id="edge2">
+					    	<i class="mdl-icon-toggle__label material-icons">keyboard_arrow_down</i> 
+				       		<label class="mdl-textfield__label bar_hack" for="edge">Edge Cutoff</label>
+				       		<ul class="mdl-menu mdl-menu--top-left mdl-js-menu" for="edge" id = 'edge_select'>
+				         		<li class="mdl-menu__item" data-val="0.5">0.5</li>
+				       		</ul>
+						</div>
+
 					</div>
 				</div>
 		   	 </div>
