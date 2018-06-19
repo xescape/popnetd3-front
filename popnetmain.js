@@ -29,7 +29,7 @@
  */
 
 //TODO: User defined variables
-var url = "http://kali:3000"
+var url = "."
 var input = url + "/results/data3.json";
 
 
@@ -58,7 +58,15 @@ var labelAttrs = {
 }
 
 var edgeAttrs = {
-	"stroke": 'grey',
+	"stroke": function(d){
+		if(d.width >= 0.5){
+			return 'grey'
+		}
+		else{
+			return 'lightgrey'
+		}
+		
+	},
 	'stroke-width': function(d){return translateEdge(d.width) + "px"}
 }
 
@@ -124,14 +132,17 @@ var cutoff = 0.5
 var edge_weights = {
 	
 	0.90: 8,
-	0.80: 4,
-	0.70: 2,
-	0.50: 1,
-	0.25: 1,
-	0: 1
+	0.80: 6,
+	0.70: 4,
+	0.50: 2,
+	0.40: 1,
+	0.30: 1,
+	0.20: 1,
+	0.10: 1,
+	0.00: 1
 	
 }
-var edge_weight_keys = Object.keys(edge_weights)
+var edge_weight_keys = Object.keys(edge_weights).map(function(d){return parseFloat(d)}).sort(function(a, b){return b - a})
 
 document.getElementById("chr").addEventListener("change", function(){
 //	console.log(document.getElementById("chr").getAttribute("data-val"))
@@ -164,6 +175,7 @@ $.post(url + '/c/settings', {settings: JSON.stringify(settings)}, function(data)
 	d3.json(input, function(d){ 
 		draw_state = draw(d)
 		console.log('draw_state is now ' + draw_state)
+		redrawEdges(draw_state, document.getElementById("edge2").value)
 	})
 })
 
@@ -174,6 +186,9 @@ document.getElementById("uploadBtn").onchange = function () {
 document.getElementById("submit").addEventListener("click", submit, false);
 
 document.getElementById("launch").addEventListener("click", launch, false);
+
+document.getElementById("example").addEventListener("click", launch_example, false);
+
 
 
 function submit(){
@@ -222,6 +237,18 @@ function launch(){
 	d3.json(input, function(d){ 
 		draw_state = draw(d)
 		console.log('draw_state is now ' + draw_state)
+		redrawEdges(draw_state, document.getElementById("edge2").value)
+	})
+}
+
+function launch_example(){
+	id = "data3"
+	input = url + "/results/" + id + ".json"
+	svg.html("")
+	d3.json(input, function(d){ 
+		draw_state = draw(d)
+		console.log('draw_state is now ' + draw_state)
+		redrawEdges(draw_state, document.getElementById("edge2").value)
 	})
 }
 
@@ -426,7 +453,7 @@ function draw(data){
 	var edges = container.append("g")
 	.attr("class", "link")
 		.selectAll(".link")
-		.data(minEdges(data.edges, 0.5)).enter()
+		.data(minEdges(data.edges, 0)).enter()
 		.append('line');
 	attachAttr(edges, edgeAttrs);
 	
@@ -598,12 +625,21 @@ function countChrs(ids){
 
 function translateEdge(p){
 	
+	
 	var a = edge_weight_keys.map(function(a){return Math.abs(parseFloat(a) - p)})
 	var b = a.indexOf(Math.min(...a))
 	
-//	console.log('value ' + p + ' translated to ' + edge_weights[edge_weight_keys[b]])
+	console.log(p)
+	console.log(a)
 	
-	return edge_weights[edge_weight_keys[b]]
+//	console.log('value ' + p + ' translated to ' + edge_weights[edge_weight_keys[b]])
+	if(edge_weight_keys[b] <= p){
+		return edge_weights[edge_weight_keys[b]]
+	}
+	else{
+		return edge_weights[edge_weight_keys[b] + 1]
+	}
+	
 	
 }
 
@@ -924,13 +960,38 @@ function groupCircle(simulation, reset = false){
 		//calculated x positions in a circle around the center
 		//when each node has a certain radius
 		
-		var r = Math.max(n * (nodeRadius * 2 + borderWidth * 4) / (2 * Math.PI), 2 * (nodeRadius + 20))
-		return _.range(n).map(function(i){
-			return {
-				x: g.x + r * Math.cos(2 * Math.PI * i / n) - nodeRadius - 10,
-				y: g.y + r * Math.sin(2 * Math.PI * i / n) - nodeRadius - 10
+		function calcRings(n, m, k){
+		//n is how many nodes you still have, m is how many nodes are in this ring
+		// for now let's have m and k start off the same
+			if(n <= m){
+				return [n]
 			}
-		})	
+			else{
+				var a = calcRings(n - m, m + k, k)
+				a.unshift(m)
+				return a
+			}
+		}
+		
+		function placeNodes(g, n, i, k){
+			var r = Math.max(n * (nodeRadius * 2 + borderWidth * 4) / (2 * Math.PI), Math.max(2 * (nodeRadius + 20), k * (i + 1) * (nodeRadius * 2 + borderWidth * 4) / (2 * Math.PI)))
+			return _.range(n).map(function(i){
+				return {
+					x: g.x + r * Math.cos(2 * Math.PI * i / n) - nodeRadius - 10,
+					y: g.y + r * Math.sin(2 * Math.PI * i / n) - nodeRadius - 10
+				}
+			})	
+		}
+			
+		var k = 8 //8 more per ring
+		var rings = calcRings(n, k, k) //inner ring
+		var results = rings.map(function(n, i){ return placeNodes(g, n, i, k)})
+		
+		console.log(results)
+		
+		return results.reduce(function(a, b){ return a.concat(b)}, [])
+		
+		
 	}
 	
 	function positionNodes(nodes, g){
@@ -1098,7 +1159,7 @@ function getLinear(){
 		var length = 900,
 			height = 40,
 			front = 300,
-			margin = {top: 20, right: 80, bottom: 30, left: 80},
+			margin = {top: 20, right: 20, bottom: 30, left: 20},
 			padding = [10, 10, 10, 10]
 		
 		var attach = JSON.stringify(node_list.map(function(d, i){
@@ -1116,6 +1177,7 @@ function getLinear(){
 		
 		svg.attr("width", length + padding[1] + padding[3] + front + margin.left + margin.right)
 		 .attr("height", (height + padding[0] + padding[2]) * node_list.length + 1 + margin.top + margin.bottom)
+		 .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 		
 //		svg.attr("height", (nodeRadius * 2 + borderWidth * 4) * settings.scale + labelAttrs.y)
 //		.attr("width", (nodeRadius * 2 + borderWidth * 4) * settings.scale)

@@ -61,7 +61,24 @@ div.entry{
 	left: 10px;
 }
 
+.example_block{
+	width: 50px;
+}
+
 body{
+}
+
+#ex_block1{
+	order: 0;
+}
+
+#ex_block2{
+	order: 99;
+	font-size: 5;
+}
+
+#example{
+	margin-left: 10px;
 }
 
 #landing{
@@ -95,14 +112,14 @@ body{
 }
 #container{
 	display: flex;
-	/*align-items: center;*/
+	flex-direction: row;
+	justify-content: center;
 	/*justify-content: center;*/
 	background-color: white;
 
 }
 
 #viewport{
-	flex-grow: 1;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
@@ -112,9 +129,9 @@ body{
 	text_align: center;
 	/*border: 5px solid white;*/
 	background-color: white;
-	width: inherit;
+	width: 1280px;
 	height: 1000px;
-	margin: 0px 200px;
+	/*margin: 0px 200px;*/
 	border: 0px solid white;
 }
 

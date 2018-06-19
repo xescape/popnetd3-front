@@ -9,7 +9,7 @@
 <script src="pdfkit.js"></script>
 <script src='topdf.js'></script>
 <script src='blob-stream.js'></script>
-<script src="/node_modules/markdown/lib/markdown.js"></script>
+<script src="./node_modules/markdown/lib/markdown.js"></script>
 <link rel="stylesheet" href="index.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
@@ -187,8 +187,9 @@
 	    	</div>
     	
 	    	<div class = "mdl-tabs__panel" id="graph_panel">
-	    		<div class = "page-content" id = "graph_container">
+	    		<div class = "page-content" id = "graph_container">		
 		    		<div class = "page-content" id = "fileselect">
+		    			<div class="example_block" id="ex_block1"></div>
 		    			<form action = "#">
 		    				<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 		    					<input class="mdl-textfield__input" type="text" id="jobid">
@@ -198,8 +199,13 @@
 		    			<button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored" id="launch">
 		    				<i class = 'material-icons'>arrow_forward</i>
 		    			</button>
+		    			<div class="example_block" id="ex_block2">
+			    			<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="example">
+								Example
+							</button>
+			    		</div>
 		    		</div>
-		    		
+
 		    		<div class="page-content" id="graph"></div>
 			    	<div class="page-content" id="bar">
 		    			<button class="mdl-button mdl-js-button mdl-button--icon" id="button-save">
@@ -209,9 +215,10 @@
 			    		<button class="mdl-button mdl-js-button mdl-button--icon" id="button-reset">
 		  					<i class="material-icons">refresh</i>
 						</button>
-			    		<button class="mdl-button mdl-js-button mdl-button--icon" id="button-force">
+						
+			    		<!-- <button class="mdl-button mdl-js-button mdl-button--icon" id="button-force">
 		  					<i class="material-icons">play_circle_outline</i>
-						</button>
+						</button>  -->
 						
 						<button class="mdl-button mdl-js-button mdl-button--icon" id="button-linear">
 		  					<i class="material-icons">reorder</i>
@@ -228,12 +235,12 @@
 						</div>
 						
 						<div class="mdl-textfield mdl-js-textfield getmdl-select getmdl-select" id="edge_container">
-					   		<input class="mdl-textfield__input" id="edge" value="" type="text" readonly>
-					   		<input type="hidden" value="" name="edge" id="edge2">
+					   		<input class="mdl-textfield__input" id="edge" value="0.5" type="text" readonly>
+					   		<input type="hidden" value="0.5" name="edge" id="edge2">
 					    	<i class="mdl-icon-toggle__label material-icons">keyboard_arrow_down</i> 
-				       		<label class="mdl-textfield__label bar_hack" for="chr">Edge Cutoff</label>
+				       		<label class="mdl-textfield__label bar_hack" for="edge">Edge Cutoff</label>
 				       		<ul class="mdl-menu mdl-menu--top-left mdl-js-menu" for="edge" id = 'edge_select'>
-				         		<li class="mdl-menu__item" data-val="all">50%</li>
+				         		<li class="mdl-menu__item" data-val="0.5">0.5</li>
 				       		</ul>
 						</div>
 

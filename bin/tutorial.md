@@ -3,7 +3,7 @@
 
 **Prerequisites**  
 
-Data Format: Currently, we only accept tabular SNP data as input. An example can be viewed [here](./toxo20.txt). The requirements are:
+Data Format: Currently, we only accept tabular SNP data as input. An example can be viewed [here](./bin/toxo20.txt). The requirements are:
 
   1. Elements in a row are separated by tabs (the \\t character).
   2. The header row begin with '#CHROM', followed by 'POS', followed by a list of sample names. The sample names should be short, and consist only of alphanumeric characters (A-Z, 0-9)
@@ -46,9 +46,9 @@ This is where you can view, manipulate, and save the results of your job as a PD
   3. Groups, representing subpopulations, are organized in a circle around 'group nodes', which appear as a solid dot. All nodes within a group can be dragged simultaneously via the group node. 
   4. Save: Saves the current view as a PDF. Saves only what's on the screen.  
   5. Reset: Resets the nodes to their initial positions.  
-  6. Apply Force: Applies forces to reshape the graph layout. Currently no forces are defined. (Under development)  
-  7. Chromosome Alignment: Opens the chromosome alignment window (A), showing an aligned view of the current chromosome for all selected nodes. Nodes can be selected from the network viewer by clicking on the node. A selected node will be colored yellow. Note that if there are more than one chromosomes, a node can only be selected after the view has been expanded to a single chromosome.   
-  8. Select Chromosome: Select a chromosome by number. Behaves similarly to clicking on a chromosome in the network view. 
+  6. Chromosome Alignment: Opens the chromosome alignment window (A), showing an aligned view of the current chromosome for all selected nodes. Nodes can be selected from the network viewer by clicking on the node. A selected node will be colored yellow. Note that if there are more than one chromosomes, a node can only be selected after the view has been expanded to a single chromosome.   
+  7. Select Chromosome: Select a chromosome by number. Behaves similarly to clicking on a chromosome in the network view. 
+  8. Select Edge Cutoff: Edges with similarity value below the selected cutoff will not be displayed.
 
  
 
