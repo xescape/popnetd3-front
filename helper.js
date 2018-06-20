@@ -5,9 +5,9 @@
 
 
 //var helppath = "http:www.compsysbio.org/popnet/bin/help1.md"
-var helppath = "/bin/help1.md"
-var subhelppath = "/bin/subhelp.md"
-var tutpath = "/bin/tutorial.md"
+var helppath = "./bin/help1.md"
+var subhelppath = "./bin/subhelp.md"
+var tutpath = "./bin/tutorial.md"
 var banner_size = 'L'
 
 showMD(document.getElementById('ins1'), helppath)
