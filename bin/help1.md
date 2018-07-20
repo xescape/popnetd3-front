@@ -8,7 +8,7 @@ Popnet-D3 employs the D3 package to produce robust visualizations that facilitat
 
 **Running a Job**
 
-The 'Submit Job' tab lets you submit a data to our server to be analyzed by PopNet. Please refer to the tool tip in each section 
+The 'Submit Job' tab lets you submit data to our server to be analyzed by PopNet. Please refer to the tool tip in each section 
 for guidelines on the parameters. Currently we only accept tabular formatted data sets. See an example [here](./bin/toxo20.txt).
 You will receive an email notification upon completion of your job with a job id, used to retreive your job. A typical job involving 50
 samples is expected to take less than an hour. 
@@ -24,6 +24,7 @@ Drag the background to move the view, and use the sroll wheel to zoom in/out.
 **More Information**
 
 For a detailed guide on PopNetD3 functions, go to the Tutorial Tab. 
+Email me at javi.zhang@mail.utoronto.ca for any questions!
 
 **Citation**
 

@@ -124,7 +124,7 @@ function makeConfig(config, id, folderpath, configpath){
 
 function makeEmailMessage(id){
 	
-	return "Hello,\n\nYour PopNet job has completed. Please use the JobID '" + id + "'in the visualization tab of the website to retreive your results.\n\nThank you for using PopNetD3!"
+	return "Hello,\n\nYour PopNet job has completed. Please use the JobID '" + id + "' in the visualization tab of the website to retreive your results.\n\nThank you for using PopNetD3!"
 	
 }
 
