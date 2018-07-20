@@ -11,7 +11,7 @@ var multer = require("multer")
 var upload = multer()
 
 var dir = "./data"
-var absdir = "/home/javi/workspace/popnetd3-front/data"
+var absdir = "/var/html/popnetd3-front/data"
 var results = "./results"
 var ids = './ids.txt'
 var baseconfig = './bin/baseconfig.txt'
@@ -124,7 +124,7 @@ function makeConfig(config, id, folderpath, configpath){
 
 function makeEmailMessage(id){
 	
-	return "Hello,\n\nYour PopNet job has completed. Please use the JobID '" + id + "'in the visualization tab of the website to retreive your results.\n\nThank you for using PopNetD3!"
+	return "Hello,\n\nYour PopNet job has completed. Please use the JobID '" + id + "' in the visualization tab of the website to retreive your results.\n\nThank you for using PopNetD3!"
 	
 }
 
