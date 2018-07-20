@@ -5,9 +5,9 @@
 
 
 //var helppath = "http:www.compsysbio.org/popnet/bin/help1.md"
-var helppath = "/bin/help1.md"
-var subhelppath = "/bin/subhelp.md"
-var tutpath = "/bin/tutorial.md"
+var helppath = "./bin/help1.md"
+var subhelppath = "./bin/subhelp.md"
+var tutpath = "./bin/tutorial.md"
 var banner_size = 'L'
 
 showMD(document.getElementById('ins1'), helppath)
@@ -64,7 +64,7 @@ function growBanner(){
 
 function resize_container(){
 	sizes = {
-			"landing_tab_button" : '1000px',
+			"landing_tab_button" : '1550px',
 			"config_tab_button" : '800px',
 			"graph_tab_button" : '900px',
 			"tutorial_tab_button" : '2600px'		
