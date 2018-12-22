@@ -193,7 +193,16 @@ document.getElementById("example").addEventListener("click", launch_example, fal
 
 function submit(){
 	
-	console.log("submitting")
+	console.log("submitting")	
+	defaults = {
+		'species': 'pla',
+		'format': 'tab',
+		'reference': 'none',
+		'ival': 4,
+		'pival':1.5,
+		'sl':5000
+		}
+	
 	var config = new FormData(),
 		ival = document.getElementById("ival").value,
 		pival = document.getElementById("pival").value,
@@ -209,6 +218,17 @@ function submit(){
 	config.append('file', document.getElementById("uploadBtn").files[0], document.getElementById("uploadBtn").files[0].name)
 	config.append('email', document.getElementById("email").value)
 	
+	var flag = false
+	for(let i of defaults){
+		if(config.get(i) == null){
+			config.set(i, defaults.i)
+			flag = true
+		}
+	}
+	if(flag==true){
+		alert('empty values have been replaced with defaults.')
+	}
+		
 	
 	console.log(config)
 	
