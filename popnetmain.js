@@ -222,6 +222,7 @@ function submit(){
 	for(let i of Object.keys(defaults)){
 		if(config.get(i) == null){
 			config.set(i, defaults.i)
+			console.log('change a thing to default')
 			flag = true
 		}
 	}
