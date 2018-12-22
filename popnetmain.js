@@ -219,7 +219,7 @@ function submit(){
 	config.append('email', document.getElementById("email").value)
 	
 	var flag = false
-	for(let i of defaults){
+	for(let i of Object.keys(defaults)){
 		if(config.get(i) == null){
 			config.set(i, defaults.i)
 			flag = true
