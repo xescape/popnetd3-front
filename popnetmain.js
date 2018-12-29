@@ -194,15 +194,6 @@ document.getElementById("example").addEventListener("click", launch_example, fal
 function submit(){
 	
 	console.log("submitting")	
-	defaults = {
-		'species': 'pla',
-		'format': 'tab',
-		'reference': 'none',
-		'ival': 4,
-		'pival':1.5,
-		'sl':5000
-		}
-	
 	var config = new FormData(),
 		ival = document.getElementById("ival").value,
 		pival = document.getElementById("pival").value,
@@ -215,26 +206,17 @@ function submit(){
 	config.append('ival', document.getElementById("ival").value)
 	config.append('pival', document.getElementById("pival").value)
 	config.append('sl', document.getElementById("sl").value)
-	config.append('file', document.getElementById("uploadBtn").files[0], document.getElementById("uploadBtn").files[0].name)
 	config.append('email', document.getElementById("email").value)
 	
-	var flag = false
-	for(let i of Object.keys(defaults)){
-		if(config.get(i) == null){
-			config.set(i, defaults.i)
-			console.log('change a thing to default')
-			flag = true
-		}
+	try{
+		config.append('file', document.getElementById("uploadBtn").files[0], document.getElementById("uploadBtn").files[0].name)
 	}
-	if(flag==true){
-		alert('empty values have been replaced with defaults.')
+	catch(err){
+		config.append('file', "")
 	}
-		
 	
-	console.log(config)
-	
-	if(0 > ival > 20 || 0 > pival > 20 || 0 > sl){ alert("Please set appropriate cluster parameters according to tooltip.")}
-	else{
+	console.log(Array.from(config.entries))
+	if(validateForm(config)){
 		
 		var request = new XMLHttpRequest();
 		request.open('POST', url + "/data/run")
@@ -249,6 +231,33 @@ function submit(){
 	}
 	
 	
+}
+
+function validateForm(form){
+	
+	//make sure no empty fields
+	for(let pair of form){
+		if(pair[1] === ""){
+			alert(pair[0] + ' is empty. Please fill in all fields.')
+			return false
+		}
+	}
+	
+	//make sure numbers are numbers
+	for(let i of ['ival', 'pival', 'sl']){
+		if(isNaN(parseInt(form.get(i)))){
+			alert(i + ' is not a number.')
+			return false
+		}
+	}
+	
+	//make sure params are within range.
+	if(!(18 >= parseInt(form.get('ival')) >= 1 && 4 >= parseInt(form.get('pival')) >= 1 && parseInt(form.get('sl')) > 0)){ 
+		alert("Please set appropriate cluster parameters according to tooltip.")
+		return false
+	}
+	
+	return true
 }
 
 function launch(){
@@ -614,7 +623,7 @@ function updateChrs(n){
 	}).join('')
 	
 	document.getElementById('chr_select').innerHTML = all + html;
-	getmdlSelect.init('.getmdl-select')
+	getmdlSelect.init('#chr_container')
 }
 
 
@@ -626,7 +635,7 @@ function updateEdgeCutoff(){
 	}).join('')
 	
 	document.getElementById('edge_select').innerHTML = all + html;
-	getmdlSelect.init('.getmdl-select')
+	getmdlSelect.init('#edge_container')
 }
 
 
@@ -779,78 +788,81 @@ function getChr(node){
 	.attr("transform", "scale(" + 1 / scale + ")")
 //	.attr("transform", "scale(" + 0.1 + ")")
 	
-	getDataURI(path, function(uri){
-		g.append("image")
-		 .attr("xlink:href", uri)
-		 .attr("width", (nodeRadius * 2 + borderWidth * 4) * scale)
-		 .attr("height", (nodeRadius * 2 + borderWidth * 4) * scale + labelAttrs['font-size'])
-		
-		var svgtext = $.get(svgpath, function(){
-			svgdom = domparser.parseFromString(svgtext.responseText, "image/svg+xml").querySelectorAll("[name='" + node.name + "']")[0]
-			svgdom.removeAttribute("xmlns")
+//	getDataURI(path, function(uri){
+//		g.append("image")
+//		 .attr("xlink:href", uri)
+//		 .attr("width", (nodeRadius * 2 + borderWidth * 4) * scale)
+//		 .attr("height", (nodeRadius * 2 + borderWidth * 4) * scale + labelAttrs['font-size'])
+//		
+//		var svgtext = $.get(svgpath, function(){
+//			svgdom = domparser.parseFromString(svgtext.responseText, "image/svg+xml").querySelectorAll("[name='" + node.name + "']")[0]
+//			svgdom.removeAttribute("xmlns")
+//	
+//			//listener for chr switching
+//			if(chr === 'all'){
+//				
+//				var arcs = Array.from(svgdom.childNodes[0].childNodes)
+//
+//				
+//				var archeader = svgdom.childNodes[0]
+//
+//				var zzz = _.range(arcs.length)
+//
+//				var arc_nodes = g.append(function(d){return archeader;})
+//								.selectAll('.arcs').data(zzz)
+//								.enter()
+//								.append(function(e){
+//									return arcs[e];
+//								})
+////								.attr("transform", "scale(" + 1 / scale + ")")
+//
+//								
+//				arc_nodes.each(function(d, i){
+//					
+////					console.log('attaching trigger to chr ' + (i + 1))
+////					console.log('d is ' + d + ' i is ' + i)
+//					
+//					d3.select(this).on('click', function(){
+//						console.log('event clicked!')
+//						chr = 'CHR' + (i + 1)
+////						console.log('chr is ' + chr)
+//						redraw(draw_state)
+//					})
+//					
+//				})
+//	
+//			}
+//			else{
+//				g.on("click", function(){
+//					
+//					if($.inArray(node.name, node_list) >= 0){
+//						d3.select(this).selectAll(".selected").remove()
+//						node_list.splice(node_list.indexOf(node.name), 1)
+//						console.log(node.name + " removed from")
+//					}
+//					else{
+//						d3.select(this).append('circle')
+//						.attr("class", "selected")
+//						.attr("fill", "none")
+//						.attr("r", settings.nodeRadius)
+//						.attr("stroke", "yellow")
+//						.attr("stroke-width", '20')
+//						.attr("cx", 40 + settings.nodeRadius + borderWidth * 2)
+//						.attr("cy", settings.nodeRadius + borderWidth * 2 + 40)
+//					
+//						node_list.push(node.name)
+//						console.log(node.name + " added to list")
+//					}
+//					
+//				})
+//			}
+////			console.log(node)
+//			
+//		})
+//	})
 	
-			//listener for chr switching
-			if(chr === 'all'){
-				
-				var arcs = Array.from(svgdom.childNodes[0].childNodes)
-
-				
-				var archeader = svgdom.childNodes[0]
-
-				var zzz = _.range(arcs.length)
-
-				var arc_nodes = g.append(function(d){return archeader;})
-								.selectAll('.arcs').data(zzz)
-								.enter()
-								.append(function(e){
-									return arcs[e];
-								})
-//								.attr("transform", "scale(" + 1 / scale + ")")
-
-								
-				arc_nodes.each(function(d, i){
-					
-//					console.log('attaching trigger to chr ' + (i + 1))
-//					console.log('d is ' + d + ' i is ' + i)
-					
-					d3.select(this).on('click', function(){
-						console.log('event clicked!')
-						chr = 'CHR' + (i + 1)
-//						console.log('chr is ' + chr)
-						redraw(draw_state)
-					})
-					
-				})
 	
-			}
-			else{
-				g.on("click", function(){
-					
-					if($.inArray(node.name, node_list) >= 0){
-						d3.select(this).selectAll(".selected").remove()
-						node_list.splice(node_list.indexOf(node.name), 1)
-						console.log(node.name + " removed from")
-					}
-					else{
-						d3.select(this).append('circle')
-						.attr("class", "selected")
-						.attr("fill", "none")
-						.attr("r", settings.nodeRadius)
-						.attr("stroke", "yellow")
-						.attr("stroke-width", '20')
-						.attr("cx", 40 + settings.nodeRadius + borderWidth * 2)
-						.attr("cy", settings.nodeRadius + borderWidth * 2 + 40)
-					
-						node_list.push(node.name)
-						console.log(node.name + " added to list")
-					}
-					
-				})
-			}
-//			console.log(node)
-			
-		})
-	})
+	
 //	return e
 	
 	

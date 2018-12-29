@@ -98,9 +98,9 @@ function draw(params){
 	
 	var svgBuffer = new Buffer(d3n.svgString(), 'utf-8')
 	
-	return svgBuffer
 	
 	console.log('draw ends for ' + outpath)
+	return svgBuffer
 }
 
 function drawSVG(params){
@@ -293,6 +293,7 @@ function paintChr(node, colorTable, outpath, mode = 'PNG'){
 			return d;
 		});
 	
+
 	if(mode === 'PNG'){
 		
 		var circle = svg.append("circle")
@@ -329,6 +330,7 @@ function paintChr(node, colorTable, outpath, mode = 'PNG'){
 		g.append("path")
 			.attr("d", arc)
 	}
+	
 	
 }
 
