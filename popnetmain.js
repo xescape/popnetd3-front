@@ -186,6 +186,7 @@ document.getElementById("uploadBtn").onchange = function () {
 document.getElementById("submit").addEventListener("click", submit, false);
 
 document.getElementById("launch").addEventListener("click", launch, false);
+document.getElementById("jobid").addEventListener("keypress", launchByKey, false);
 
 document.getElementById("example").addEventListener("click", launch_example, false);
 
@@ -269,6 +270,12 @@ function launch(){
 		console.log('draw_state is now ' + draw_state)
 		redrawEdges(draw_state, document.getElementById("edge2").value)
 	})
+}
+
+function launchByKey(e){
+	if(e.key == 'Enter'){
+		launch()
+	}
 }
 
 function launch_example(){
