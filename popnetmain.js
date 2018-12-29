@@ -267,7 +267,7 @@ function launch(){
 	svg.html("")
 	d3.json(input, function(d){ 
 		draw_state = draw(d)
-		console.log('draw_state is now ' + draw_state)
+//		console.log('draw_state is now ' + draw_state)
 		redrawEdges(draw_state, document.getElementById("edge2").value)
 	})
 }
@@ -666,8 +666,8 @@ function translateEdge(p){
 	var a = edge_weight_keys.map(function(a){return Math.abs(parseFloat(a) - p)})
 	var b = a.indexOf(Math.min(...a))
 	
-	console.log(p)
-	console.log(a)
+//	console.log(p)
+//	console.log(a)
 	
 //	console.log('value ' + p + ' translated to ' + edge_weights[edge_weight_keys[b]])
 	if(edge_weight_keys[b] <= p){
@@ -682,7 +682,7 @@ function translateEdge(p){
 
 function redrawEdges(state, cutoff){
 	
-	console.log('cut off is ' + cutoff)
+//	console.log('cut off is ' + cutoff)
 	
 	state.edges.attr('visibility', 'hidden')
 	
@@ -795,78 +795,78 @@ function getChr(node){
 	.attr("transform", "scale(" + 1 / scale + ")")
 //	.attr("transform", "scale(" + 0.1 + ")")
 	
-//	getDataURI(path, function(uri){
-//		g.append("image")
-//		 .attr("xlink:href", uri)
-//		 .attr("width", (nodeRadius * 2 + borderWidth * 4) * scale)
-//		 .attr("height", (nodeRadius * 2 + borderWidth * 4) * scale + labelAttrs['font-size'])
-//		
-//		var svgtext = $.get(svgpath, function(){
-//			svgdom = domparser.parseFromString(svgtext.responseText, "image/svg+xml").querySelectorAll("[name='" + node.name + "']")[0]
-//			svgdom.removeAttribute("xmlns")
-//	
-//			//listener for chr switching
-//			if(chr === 'all'){
-//				
-//				var arcs = Array.from(svgdom.childNodes[0].childNodes)
-//
-//				
-//				var archeader = svgdom.childNodes[0]
-//
-//				var zzz = _.range(arcs.length)
-//
-//				var arc_nodes = g.append(function(d){return archeader;})
-//								.selectAll('.arcs').data(zzz)
-//								.enter()
-//								.append(function(e){
-//									return arcs[e];
-//								})
-////								.attr("transform", "scale(" + 1 / scale + ")")
-//
-//								
-//				arc_nodes.each(function(d, i){
-//					
-////					console.log('attaching trigger to chr ' + (i + 1))
-////					console.log('d is ' + d + ' i is ' + i)
-//					
-//					d3.select(this).on('click', function(){
-//						console.log('event clicked!')
-//						chr = 'CHR' + (i + 1)
-////						console.log('chr is ' + chr)
-//						redraw(draw_state)
-//					})
-//					
-//				})
-//	
-//			}
-//			else{
-//				g.on("click", function(){
-//					
-//					if($.inArray(node.name, node_list) >= 0){
-//						d3.select(this).selectAll(".selected").remove()
-//						node_list.splice(node_list.indexOf(node.name), 1)
-//						console.log(node.name + " removed from")
-//					}
-//					else{
-//						d3.select(this).append('circle')
-//						.attr("class", "selected")
-//						.attr("fill", "none")
-//						.attr("r", settings.nodeRadius)
-//						.attr("stroke", "yellow")
-//						.attr("stroke-width", '20')
-//						.attr("cx", 40 + settings.nodeRadius + borderWidth * 2)
-//						.attr("cy", settings.nodeRadius + borderWidth * 2 + 40)
-//					
-//						node_list.push(node.name)
-//						console.log(node.name + " added to list")
-//					}
-//					
-//				})
-//			}
-////			console.log(node)
-//			
-//		})
-//	})
+	getDataURI(path, function(uri){
+		g.append("image")
+		 .attr("xlink:href", uri)
+		 .attr("width", (nodeRadius * 2 + borderWidth * 4) * scale)
+		 .attr("height", (nodeRadius * 2 + borderWidth * 4) * scale + labelAttrs['font-size'])
+		
+		var svgtext = $.get(svgpath, function(){
+			svgdom = domparser.parseFromString(svgtext.responseText, "image/svg+xml").querySelectorAll("[name='" + node.name + "']")[0]
+			svgdom.removeAttribute("xmlns")
+	
+			//listener for chr switching
+			if(chr === 'all'){
+				
+				var arcs = Array.from(svgdom.childNodes[0].childNodes)
+
+				
+				var archeader = svgdom.childNodes[0]
+
+				var zzz = _.range(arcs.length)
+
+				var arc_nodes = g.append(function(d){return archeader;})
+								.selectAll('.arcs').data(zzz)
+								.enter()
+								.append(function(e){
+									return arcs[e];
+								})
+//								.attr("transform", "scale(" + 1 / scale + ")")
+
+								
+				arc_nodes.each(function(d, i){
+					
+//					console.log('attaching trigger to chr ' + (i + 1))
+//					console.log('d is ' + d + ' i is ' + i)
+					
+					d3.select(this).on('click', function(){
+						console.log('event clicked!')
+						chr = 'CHR' + (i + 1)
+//						console.log('chr is ' + chr)
+						redraw(draw_state)
+					})
+					
+				})
+	
+			}
+			else{
+				g.on("click", function(){
+					
+					if($.inArray(node.name, node_list) >= 0){
+						d3.select(this).selectAll(".selected").remove()
+						node_list.splice(node_list.indexOf(node.name), 1)
+						console.log(node.name + " removed from")
+					}
+					else{
+						d3.select(this).append('circle')
+						.attr("class", "selected")
+						.attr("fill", "none")
+						.attr("r", settings.nodeRadius)
+						.attr("stroke", "yellow")
+						.attr("stroke-width", '20')
+						.attr("cx", 40 + settings.nodeRadius + borderWidth * 2)
+						.attr("cy", settings.nodeRadius + borderWidth * 2 + 40)
+					
+						node_list.push(node.name)
+						console.log(node.name + " added to list")
+					}
+					
+				})
+			}
+//			console.log(node)
+			
+		})
+	})
 	
 	
 	
@@ -1026,9 +1026,7 @@ function groupCircle(simulation, reset = false){
 		var k = 8 //8 more per ring
 		var rings = calcRings(n, k, k) //inner ring
 		var results = rings.map(function(n, i){ return placeNodes(g, n, i, k)})
-		
-		console.log(results)
-		
+	
 		return results.reduce(function(a, b){ return a.concat(b)}, [])
 		
 		
