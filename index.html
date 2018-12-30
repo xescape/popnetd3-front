@@ -220,37 +220,38 @@
 
 		    		<div class="page-content" id="graph"></div>
 			    	<div class="page-content" id="bar">
-		    			<button class="mdl-button mdl-js-button mdl-button--icon" id="button-save">
-		 					<i class="material-icons">save</i>
-		 					<a id='dl' download='popnet.png'></a>
-						</button>
-			    		<button class="mdl-button mdl-js-button mdl-button--icon" id="button-reset">
-		  					<i class="material-icons">refresh</i>
-						</button>
-						
-			    		<!-- <button class="mdl-button mdl-js-button mdl-button--icon" id="button-force">
-		  					<i class="material-icons">play_circle_outline</i>
-						</button>  -->
-						
-						<button class="mdl-button mdl-js-button mdl-button--icon" id="button-linear">
-		  					<i class="material-icons">reorder</i>
-						</button>
-
+			    		<div class="page-content" id="vis_bar_container">
+			    			<button class="mdl-button mdl-js-button mdl-button--icon" id="button-save">
+			 					<i class="material-icons">save</i>
+			 					<a id='dl' download='popnet.png'></a>
+							</button>
+				    		<button class="mdl-button mdl-js-button mdl-button--icon" id="button-reset">
+			  					<i class="material-icons">refresh</i>
+							</button>
+							
+				    		<!-- <button class="mdl-button mdl-js-button mdl-button--icon" id="button-force">
+			  					<i class="material-icons">play_circle_outline</i>
+							</button>  -->
+							
+							<button class="mdl-button mdl-js-button mdl-button--icon" id="button-linear">
+			  					<i class="material-icons">reorder</i>
+							</button>
+						</div>
 						<div class="mdl-textfield mdl-js-textfield getmdl-select" id="chr_container">
 					   		<input class="mdl-textfield__input" id="chr" value="" type="text" readonly>
 					   		<input type="hidden" value="" name="chr" id="chr2">
 					    	<i class="mdl-icon-toggle__label material-icons">keyboard_arrow_down</i> 
-				       		<label class="mdl-textfield__label bar_hack" for="chr">Select Chromosome</label>
+				       		<label class="mdl-textfield__label" for="chr">Select Chromosome</label>
 				       		<ul class="mdl-menu mdl-menu--top-left mdl-js-menu" for="chr" id = 'chr_select'>
 				         		<li class="mdl-menu__item" data-val="all">All</li>
 				       		</ul>
 						</div>
 						
 						<div class="mdl-textfield mdl-js-textfield getmdl-select" id="edge_container">
-					   		<input class="mdl-textfield__input" id="edge" value="0.5" type="text" readonly>
+					   		<input class="mdl-textfield__input" id="edge" value="" type="text" readonly>
 					   		<input type="hidden" value="0.5" name="edge" id="edge2">
 					    	<i class="mdl-icon-toggle__label material-icons">keyboard_arrow_down</i> 
-				       		<label class="mdl-textfield__label bar_hack" for="edge">Edge Cutoff</label>
+				       		<label class="mdl-textfield__label" for="edge">Edge Cutoff</label>
 				       		<ul class="mdl-menu mdl-menu--top-left mdl-js-menu" for="edge" id = 'edge_select'>
 				         		<li class="mdl-menu__item" data-val="0.5">0.5</li>
 				       		</ul>

@@ -867,7 +867,7 @@ function getChr(node){
 			
 		})
 	})
-	
+	//stop here.
 	
 	
 //	return e
