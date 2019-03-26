@@ -3,7 +3,7 @@
 
 **Prerequisites**  
 
-Data Format: Currently, we only accept tabular SNP data as input. An example can be viewed [here](./bin/toxo20.txt). The requirements are:
+Data Format: Currently, we only accept tabular SNP data as input. An example can be viewed [here](./bin/SNPTable.txt). The requirements are:
 
   1. Elements in a row are separated by tabs (the \\t character).
   2. The header row begin with '#CHROM', followed by 'POS', followed by a list of sample names. The sample names should be short, and consist only of alphanumeric characters (A-Z, 0-9)
