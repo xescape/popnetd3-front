@@ -67,7 +67,7 @@ function resize_container(){
 			"landing_tab_button" : '1550px',
 			"config_tab_button" : '800px',
 			"graph_tab_button" : '900px',
-			"tutorial_tab_button" : '2700px'		
+			"tutorial_tab_button" : '2900px'		
 	}
 	document.getElementById("viewport").style.height = sizes[this.id]
 	console.log('resized to ' + sizes[this.id])
