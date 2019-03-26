@@ -18,7 +18,7 @@ var baseconfig = './bin/baseconfig.txt'
 var execpath = './popnet/PopNet.py'
 	
 	
-var cpUpload = upload.fields([{name: 'species', maxCount: 1}, {name: 'format', maxCount: 1}, 
+var cpUpload = upload.fields([{name: 'format', maxCount: 1}, 
 								{name: 'reference', maxCount: 1},{name: 'ival', maxCount: 1},
 								{name: 'pival', maxCount: 1},{name: 'sl', maxCount: 1},
 								{name: 'file', maxCount: 1},{name: 'email', maxCount: 1}])
@@ -98,17 +98,13 @@ function checkid(id){
 function makeConfig(config, id, folderpath, configpath){
 	
 	base = fs.readFileSync(baseconfig, 'utf-8')
-	var species_map = {
-		'Plasmodium(Default)': 'plasmodium',
-		'Toxoplasma': 'toxoplasma',
-		'Saccharomyces': 'yeast'
-	}
+
 	var input_map = {
-		'Tabular(Default)': 'tabular',
+		'Tabular': 'tabular',
 		'Nucmer(In Development)': 'nucmer',
 	}
 	
-	var species = species_map[config['species']],
+	var species = 'plasmodium',
 		format = input_map[config['format']],
 		reference = config['reference'],
 		ival = config['ival'],

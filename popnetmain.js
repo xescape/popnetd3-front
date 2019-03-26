@@ -201,7 +201,7 @@ function submit(){
 		sl = document.getElementById("sl").value
 		
 	config.append('test', 'asdf')
-	config.append('species', document.getElementById("species").value)
+	// config.append('species', document.getElementById("species").value)
 	config.append('format', document.getElementById("input").value)
 	config.append('reference', document.getElementById("reference").value)
 	config.append('ival', document.getElementById("ival").value)
