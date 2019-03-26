@@ -21,13 +21,13 @@ The 'Submit Job' tab can be used to submit jobs to be run on our server. Current
 
 ![Job Submission Page](./bin/submission.png)
 
-  1. Species: Select Toxoplasma or Saccharomyces if the data is from these species, otherwise leave as the default.
-  2. Input Format: Currently, leave this as the default.
-  3. Reference Sample: The name of the reference sample used to call the SNPs. Should also be the first sample in the data.
-  4. I Value: This value affects the groups formed by PopNet. Put 0 to use an auto-generated value.*
-  5. pI Value: Related to the I Value. Put 0 to use an auto-generated value.
-  6. Section Length: Controls how long each section in the chromosome painting is. This value should be related to the organism's genome size. For larger genomes (>20Mb), we recommend 10,000. For smaller genomes (<5Mb) we recommend 5,000. For intermediate genomes, we recommend 8000. 
-  7. Email Address: Please submit an email address so we can send you a notification when the job is done, the job id, as well as additional diagnostic data. It won't be possible to retrieve the results of a job if no email address was provided.
+  1. Input Format: Currently, leave this as the default.
+  2. Reference Sample: The name of the reference sample used to call the SNPs. Should also be the first sample in the data.
+  3. I Value: This value affects the groups formed by PopNet. Put 0 to use an auto-generated value.*
+  4. pI Value: Related to the I Value. Put 0 to use an auto-generated value.
+  5. Section Length: Controls how long each section in the chromosome painting is. This value should be related to the organism's genome size. For larger genomes (>20Mb), we recommend 10,000. For smaller genomes (<5Mb) we recommend 5,000. For intermediate genomes, we recommend 8000. 
+  6. Email Address: Please submit an email address so we can send you a notification when the job is done, the job id, as well as additional diagnostic data. It won't be possible to retrieve the results of a job if no email address was provided.
+  7. Attach File: Select the file to be uploaded here. 
 
   ------------
 
