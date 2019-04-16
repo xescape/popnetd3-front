@@ -167,7 +167,7 @@ document.getElementById("button-reset").addEventListener("click", function(){
 	d3.json(input, function(d){ draw_state = draw(d)})
 })
 
-document.getElementById("button-save").addEventListener("click", save, false);
+document.getElementById("button-save").addEventListener("click", save_network, false);
 
 document.getElementById("button-linear").addEventListener("click", getLinear, false);
 
@@ -1131,10 +1131,12 @@ function groupCircle(simulation, reset = false){
 //    
 //	img.src = url
 //}
-
-function save(){
+function save_network(){
+	save('popnet', 'popnet.pdf')
+}
+function save(to_save, name){
 	
-	var target = document.getElementById("popnet")
+	var target = document.getElementById(to_save)
 	doc = new PDFDocument({
 		size: [width, height]
 	})
@@ -1146,11 +1148,11 @@ function save(){
 	stream.on('finish', function(){
 //		blob = stream.toBlob('application/pdf')
 		url = stream.toBlobURL('application/pdf')
-		triggerDownload(url);
+		triggerDownload(url, name);
 	})
 }
 
-function triggerDownload(imgURI){
+function triggerDownload(imgURI, name){
     var evt = new MouseEvent('click', {
         view: window,
         bubbles: false,
@@ -1158,7 +1160,7 @@ function triggerDownload(imgURI){
       });
 
 	var a = document.getElementById('dl');
-	a.setAttribute('download', 'popnet.pdf');
+	a.setAttribute('download', name);
 	a.setAttribute('href', imgURI);
 	a.setAttribute('target', '_blank');
 	
@@ -1194,7 +1196,7 @@ function getLinear(){
 		
 		createLinearPanel()
 		
-		var length = 900,
+		var length = 900, //the drawn bars will always be max 900. With the other params listed here as well.
 			height = 40,
 			front = 300,
 			margin = {top: 20, right: 20, bottom: 30, left: 20},
@@ -1213,9 +1215,12 @@ function getLinear(){
 		
 		var path = "./c/" + file + "/" + attach + ".linear"
 		
-		svg.attr("width", length + padding[1] + padding[3] + front + margin.left + margin.right)
-		 .attr("height", (height + padding[0] + padding[2]) * node_list.length + 1 + margin.top + margin.bottom)
+		var width_attr = length + padding[1] + padding[3] + front + margin.left + margin.right
+				height_attr = (height + padding[0] + padding[2]) * (node_list.length + 1) + margin.top + margin.bottom
+
+		svg.attr("viewBox", `0, 0, ${width_attr}, ${height_attr}`)
 		 .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+		 .attr("id", "chr_painting")
 		
 //		svg.attr("height", (nodeRadius * 2 + borderWidth * 4) * settings.scale + labelAttrs.y)
 //		.attr("width", (nodeRadius * 2 + borderWidth * 4) * settings.scale)
@@ -1223,7 +1228,11 @@ function getLinear(){
 	//	.attr("transform", "scale(" + 0.1 + ")")
 		
 		getDataURI(path, function(uri){
-			svg.append("image").attr("xlink:href", uri)		
+			svg.append("image").attr("xlink:href", uri)
+				 .attr("viewBox", `0, 0, ${width_attr}, ${height_attr}`)
+				 .attr('height', `${height_attr}`)
+				 .attr('width', `${width_attr}`)	
+
 			document.getElementById('linear_panel').appendChild(e)
 		})
 		
@@ -1249,17 +1258,19 @@ function getLinear(){
 
 function createLinearPanel(){
 	
-	var container = document.getElementById('graph_container')
+	var container = document.getElementById('container')
 	var outer = document.createElement('div')
 	var top = document.createElement('div')
 	var tt = document.createElement('div')
 	var main = document.createElement('div')
 	var close = document.createElement('button')
+	var dl = document.createElement('button')
 	
 	container.append(outer)
 	outer.appendChild(top)
 	top.appendChild(tt)
 	top.appendChild(close)
+	top.appendChild(dl)
 	outer.appendChild(main)
 	
 	
@@ -1269,44 +1280,113 @@ function createLinearPanel(){
 //	tt.classList.add("mdl-card__title-text")
 	main.classList.add("mdl-card__media")
 	main.classList.add("mdl-card__border")
+	close.classList.add("mdl-button")
+	close.classList.add("mdl-js-button")
+	close.classList.add("mdl-button--icon")
+	close.classList.add("tooltip")
+	dl.classList.add("mdl-button")
+	dl.classList.add("mdl-js-button")
+	dl.classList.add("mdl-button--icon")
+	dl.classList.add("tooltip")
+
 	
 	outer.id = 'linear'
-	outer.style.width = 'fit-content'
+	outer.style.width = '1100px'
+	outer.style.height = 'auto'
+	outer.style.maxHeight = '600px'
 	outer.style.position = 'absolute'
 	outer.style.right = '20px'
 	outer.style.bottom = '80px'
 	outer.style.zIndex = '100'
 	outer.style.border = '1px solid black'
-	outer.style.overflow = 'auto'
+	outer.style.overflow = 'hidden'
 	outer.style.display = 'block'
 	
 	main.id = 'linear_panel'
-	main.style.backgroundColor = 'white' 
+	main.style.backgroundColor = 'white'
+	main.style.overflow='auto'
+	main.style.minHeight = '200px'
+	main.style.maxHeight = '600px'
 	top.id = 'linear_header'
 	top.style.height = '10px'
 	top.style.backgroundColor = '#3f51b5'
 //	top.style.position = "relative"
 
+	//title text
 	tt.style.fontSize = '12pt'	
 	tt.style.color = 'white'
 	tt.innerHTML = "Chromosome Alignment Panel"
 	
-	close.innerHTML = '<i class="material-icons">close</i>'
+	//close button
+	close.id = "close_button"
 	close.style.outline = "none"
 	close.style.backgroundColor = "Transparent"
 	close.style.overflow = "hidden"
 	close.style.border = "0px solid black"
 	close.style.position = "absolute"
 	close.style.right = "10px"
+	close.style.margin = "0px"
+	close.style.padding = "0px"
 	close.addEventListener('click', removeLinearPanel)
-		
+
+	//the close icon
+	close_icon = document.createElement('i')
+	close_icon.id = 'close_icon'
+	close_icon.classList.add('material-icons')
+	close_icon.innerHTML = 'close'
+
+	close_icon_tt = document.createElement('div')
+	close_icon_tt.classList.add('mdl-tooltip')
+	close_icon_tt.setAttribute('for', 'close_icon')
+	close_icon_tt.innerHTML = 'close'
+
+	close.appendChild(close_icon)
+	close.appendChild(close_icon_tt)
+
+	componentHandler.upgradeElement(close)
+	componentHandler.upgradeElement(close_icon)
+	componentHandler.upgradeElement(close_icon_tt)
+
+	//download button
+	dl.id = "download_painting"
+	dl.style.outline = "none"
+	dl.style.backgroundColor = "Transparent"
+	dl.style.overflow = "hidden"
+	dl.style.border = "0px solid black"
+	dl.style.position = "absolute"
+	dl.style.right = "50px"
+	dl.style.margin = "0px"
+	dl.style.padding = "0px"
+	dl.addEventListener('click', save_painting)
+
+	//the download icon
+	dl_icon = document.createElement('i')
+	dl_icon.id = 'dl_icon'
+	dl_icon.classList.add('material-icons')
+	dl_icon.innerHTML = 'save'
+
+	dl_icon_tt = document.createElement('div')
+	dl_icon_tt.classList.add('mdl-tooltip')
+	dl_icon_tt.setAttribute('for', 'dl_icon')
+	dl_icon_tt.innerHTML = 'save'
+
+	dl.appendChild(dl_icon)
+	dl.appendChild(dl_icon_tt)
+
+	componentHandler.upgradeElement(dl)
+	componentHandler.upgradeElement(dl_icon)
+	componentHandler.upgradeElement(dl_icon_tt)	
 	dragElement(outer)
 }
 
 function removeLinearPanel(){
-	document.getElementById('graph_container').removeChild(document.getElementById('linear'))
+	document.getElementById('container').removeChild(document.getElementById('linear'))
 }
 
+function save_painting(){
+	imgURI = document.getElementById("chr_painting").childNodes[0].getAttribute('href')
+	triggerDownload(imgURI, 'chromosome_painting.png')
+}
 
 function dragElement(elmnt) {
 	  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
