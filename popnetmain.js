@@ -183,83 +183,13 @@ document.getElementById("uploadBtn").onchange = function () {
     document.getElementById("uploadFile").value = this.files[0].name;
 };
 
-document.getElementById("submit").addEventListener("click", submit, false);
+
 
 document.getElementById("launch").addEventListener("click", launch, false);
 document.getElementById("jobid").addEventListener("keypress", launchByKey, false);
 
 document.getElementById("example").addEventListener("click", launch_example, false);
 
-
-
-function submit(){
-	
-	console.log("submitting")	
-	var config = new FormData(),
-		ival = document.getElementById("ival").value,
-		pival = document.getElementById("pival").value,
-		sl = document.getElementById("sl").value
-		
-	config.append('test', 'asdf')
-	// config.append('species', document.getElementById("species").value)
-	config.append('format', document.getElementById("input").value)
-	config.append('reference', document.getElementById("reference").value)
-	config.append('ival', document.getElementById("ival").value)
-	config.append('pival', document.getElementById("pival").value)
-	config.append('sl', document.getElementById("sl").value)
-	config.append('email', document.getElementById("email").value)
-	
-	try{
-		config.append('file', document.getElementById("uploadBtn").files[0], document.getElementById("uploadBtn").files[0].name)
-	}
-	catch(err){
-		config.append('file', "")
-	}
-	
-	console.log(Array.from(config.entries))
-	if(validateForm(config)){
-		
-		var request = new XMLHttpRequest();
-		request.open('POST', url + "/data/run")
-		
-		request.onreadystatechange = function(){
-			if(request.readyState == XMLHttpRequest.DONE && request.status == 200){
-				alert('Your job has been received. Please wait for an email response when it is completed.')
-			}
-		}
-		
-		request.send(config)
-	}
-	
-	
-}
-
-function validateForm(form){
-	
-	//make sure no empty fields
-	for(let pair of form){
-		if(pair[1] === ""){
-			alert(pair[0] + ' is empty. Please fill in all fields.')
-			return false
-		}
-	}
-	
-	//make sure numbers are numbers
-	for(let i of ['ival', 'pival', 'sl']){
-		if(isNaN(parseInt(form.get(i)))){
-			alert(i + ' is not a number.')
-			return false
-		}
-	}
-	
-	//make sure params are within range.
-	if(!(18 >= parseInt(form.get('ival')) >= 1 && 4 >= parseInt(form.get('pival')) >= 1 && parseInt(form.get('sl')) > 0)){ 
-		alert("Please set appropriate cluster parameters according to tooltip.")
-		return false
-	}
-	
-	return true
-}
 
 function launch(){
 	id = document.getElementById('jobid').value
@@ -1445,6 +1375,8 @@ function minEdges(array, min){
 
 	  return array
 }
+
+
     // You could also use the actual string without base64 encoding it:
     //img.src = "data:image/svg+xml;utf8," + svgStr;
 

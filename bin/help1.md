@@ -1,8 +1,10 @@
-###**Welcome to PopNet-D3**
+###**Welcome to PopNetD3**
 
-This is the D3-based implementation of PopNet, an analysis and visualization tool for population genetics. PopNet-D3 allows for
+**If you have any questions, please email at popnetd3@gmail.com. I'm happy to help with analyzing your data using PopNetD3.**
+
+This is the D3-based implementation of PopNet, an analysis and visualization tool for population genetics. PopNetD3 allows for
 the simple, streamlined analysis of your population of interest without the hassel of linux, programming, or external packages.
-Popnet-D3 employs the D3 package to produce robust visualizations that facilitate the discovery of inter- and intra-species genetic relationships. 
+PopnetD3 employs the D3 package to produce robust visualizations that facilitate the discovery of inter- and intra-species genetic relationships. 
 
 ####Quick Start Guide####
 
@@ -24,7 +26,7 @@ Drag the background to move the view, and use the sroll wheel to zoom in/out.
 **More Information**
 
 For a detailed guide on PopNetD3 functions, go to the Tutorial Tab. 
-Email me at javi.zhang@mail.utoronto.ca for any questions!
+Email me at popnetd3@gmail.com for any questions!
 
 **Citation**
 
