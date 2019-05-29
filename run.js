@@ -26,7 +26,16 @@ var auth = {
 	type: "OAuth2",
 	user: "popnetd3@gmail.com",
 	clientID: "279528384504-ugjngd14851tuc3moplegkkjhguoi0q6.apps.googleusercontent.com",
-	clientSecret: "S66AKE_KliuWvnxd7qDPr-NR"
+	clientSecret: "S66AKE_KliuWvnxd7qDPr-NR",
+
+	// With only refresh token - BAD
+	refreshToken: "1/hdjlyfHaUnpgrAviWxE-SwypEPd77b7JhFe-KMPDWFg",
+
+	// With a fresh access token - OK
+	// accessToken: "ya29.GlsUB5YA47jjMp_X_aSlo1ZJa8TNCYrqhs4NdDfgMIF_DAoLzRoMvIGGPTGeibChPSISUF5G7j9FHoFvaNofv9qxg433juKTcVpKRzZ_tx2ErSVXo5zuL2uYUvF5",
+
+	// With both accessToken and expires - BAD 
+	// expires: 1558728453
 }
 var transporter = nodemailer.createTransport({
 	host: 'smtp.gmail.com',
@@ -101,11 +110,15 @@ function run(req, res){
 				})}
 			else{
 				fs.writeFileSync(errorpath, error.message, 'utf-8')
-				transporter.sendMail(makeEmail(config.email, id, false, errorpath), function(err, success){
+				transporter.sendMail(makeEmail(config.email, id, false, errorpath), function(err, info){
 					if(err){
-						console.log(`emailing got this error:\n${err.message}`)
+						console.log(`emailing got this error:\n${err}
+						code:${err.code}
+						response:${err.response}
+						responseCode:${err.responseCode}`)
+						console.log(`and this stuff ${info}\n`)
 					}
-					if(success){
+					else{
 						console.log('at least the email worked.')
 					}
 				})
@@ -174,12 +187,7 @@ function makeEmail(target, id, success, attachment){
 
 	var mailOptions = {
 		from: 'popnetd3@gmail.com',
-		to: target,
-		auth: {
-			user: 'popnetd3@gmail.com',
-			refreshToken: "1/FIl7Uy8tKIIgglnaEhsA5yE6QxJN6CJd0oosljCc-gJA",
-			accessToken: "ya29.GlwTB3fODesNwU4eAk12aIcfU-8OsM-NOa6m0l3oqEzsLFuDzOwhLZ_PSnFuMM5mCS9Sy0aqycGQU-47CvsuSrQk4wF1gfiO3YlZFRiIsukLRKI3HWgWAx39KnFnXA"
-		}
+		to: target
 	}
 
 	if(success){
