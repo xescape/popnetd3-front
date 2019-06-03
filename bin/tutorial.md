@@ -50,6 +50,17 @@ This is where you can view, manipulate, and save the results of your job as a PD
   7. Select Chromosome: Select a chromosome by number. Behaves similarly to clicking on a chromosome in the network view. 
   8. Select Edge Cutoff: Edges with similarity value below the selected cutoff will not be displayed.
 
+**Clustering Metrics**
+
+Number of Clusters: The clustering should be stable across a range of I values. 
+
+Efficiency: The clustering should have high efficiency. 
+
+Inter/Intra-Cluster Distance: The clustering should have a high inter-cluster distance and low intra-cluster distance. However, most parameters will result in a trade off 
+between these two metrics. You should prioritize inter-cluster distance if separation is more important, and intra-cluster distance if similarity is more important.
+
+The default parameters, 4 and 1.5, give the best result in most test cases. However, it can make sense to increase the values to yield a finer clustering, or to do the opposite.
+
  
 
 
