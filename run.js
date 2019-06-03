@@ -25,23 +25,26 @@ var cpUpload = upload.fields([{name: 'format', maxCount: 1},
 var auth = {
 	type: "OAuth2",
 	user: "popnetd3@gmail.com",
-	clientID: "279528384504-ugjngd14851tuc3moplegkkjhguoi0q6.apps.googleusercontent.com",
+	clientId: "279528384504-ugjngd14851tuc3moplegkkjhguoi0q6.apps.googleusercontent.com",
 	clientSecret: "S66AKE_KliuWvnxd7qDPr-NR",
 
 	// With only refresh token - BAD
-	refreshToken: "1/hdjlyfHaUnpgrAviWxE-SwypEPd77b7JhFe-KMPDWFg",
+	refreshToken: "1/Pkwfwwx3IpigB8mtdAGkFp1a8i6HcatZ7j5dtQnr76w",
 
 	// With a fresh access token - OK
-	// accessToken: "ya29.GlsUB5YA47jjMp_X_aSlo1ZJa8TNCYrqhs4NdDfgMIF_DAoLzRoMvIGGPTGeibChPSISUF5G7j9FHoFvaNofv9qxg433juKTcVpKRzZ_tx2ErSVXo5zuL2uYUvF5",
+	accessToken: "ya29.GlscB1Dht6jPqqLq8Nm_ju5k7cvDcoWp3ZGId1_krLFSRp34rawWxZQoDkGw4LLcpRiak6Pfva6IUfGFqjNn9hKzaGpiSC24gTLmropcjnPneCP573CrEAQItddr",
 
 	// With both accessToken and expires - BAD 
-	// expires: 1558728453
+	expires: 1558728453,
+	
 }
 var transporter = nodemailer.createTransport({
 	host: 'smtp.gmail.com',
 	port: 465,
 	secure: true,
 	auth: auth,
+	logger: false,
+	debug: false
 })
 								
 router.post('/run', cpUpload, run)
