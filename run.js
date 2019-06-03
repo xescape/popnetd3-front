@@ -43,8 +43,8 @@ var transporter = nodemailer.createTransport({
 	port: 465,
 	secure: true,
 	auth: auth,
-	logger: true,
-	debug: true
+	logger: false,
+	debug: false
 })
 								
 router.post('/run', cpUpload, run)

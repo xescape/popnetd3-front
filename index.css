@@ -65,12 +65,14 @@ div.entry{
 	width: 50px;
 }
 
-body{
+body, html{
+	height: 100%;
 }
 
 #greycover{
-	width: 100%;
+	width: 5000px;
 	height: 100%;
+	min-height: 816px;
 	background: grey;
 	opacity: 0.5;
 	position: absolute;
