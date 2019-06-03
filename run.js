@@ -90,7 +90,7 @@ function run(req, res){
 			// 	exec("echo '" + makeEmailMessage(id, false) + "' | mail -s 'PopNetD3 Job Error' " + config['email'])
 			// }
 
-			if(error.code == 0){
+			if(!error){
 				var oldpath = folderpath + "/cytoscape/graph.json",
 					newpath = results + "/" + id + ".json",
 					oldheatpath = folderpath + "/heatmaps.pdf",
