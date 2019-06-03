@@ -86,6 +86,7 @@ function showUploadBar(){
 	var d = document.createElement("div")
 	d.id = 'greycover'
 	d.className = 'greycover'
+	
 	// d.style.height = `${parent.clientHeight}px`
 	parent.appendChild(d)
 
