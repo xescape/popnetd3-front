@@ -81,7 +81,7 @@ function run(req, res){
 		console.log("python3 " + execpath + " " + configpath)
 		
 		res.send('received.')
-		exec("python3 " + execpath + " " + configpath, function(error, stdout, stderr){
+		exec("python3 " + execpath + " " + configpath, {maxBuffer: 1024 * 1024 * 100}, function(error, stdout, stderr){
 			// old email, about to be depreciated.
 			// if(error.code == 0){
 			// 	exec("echo '" + makeEmailMessage(id, true) + "' | mail -s 'PopNetD3 Job Complete' " + config['email'])
