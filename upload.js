@@ -32,10 +32,13 @@ function submit(){
 			if(request.readyState == XMLHttpRequest.DONE && request.status == 200){
                 uploadSuccess()
 			}
+			else{
+				uploadFail()
+			}
         }
-        request.timeout = 60000
+        request.timeout = 600000
         request.ontimeout = function(){
-            uploadFail()
+            uploadTimeOut()
         }
 		request.send(config)
 	}
@@ -49,6 +52,11 @@ function uploadSuccess(){
 function uploadFail(){
     removeUploadBar()
     alert('Upload failed. If you continue to experience this error, please contact popnetd3@gmail.com.')
+}
+
+function uploadTimeOut(){
+    removeUploadBar()
+    alert('Upload exceeded time limit. If you have a large dataset, please contact popnetd3@gmail.com.')
 }
 
 function validateForm(form){

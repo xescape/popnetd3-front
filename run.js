@@ -94,7 +94,7 @@ function run(req, res){
 				var oldpath = folderpath + "/cytoscape/graph.json",
 					newpath = results + "/" + id + ".json",
 					oldheatpath = folderpath + "/Heatmaps.pdf",
-					newheatpath = folderpath + `${id}_metrics.pdf`
+					newheatpath = folderpath + `/${id}_metrics.pdf`
 
 				fs.rename(oldpath, newpath, function(){
 					fs.rename(oldheatpath, newheatpath, function(){

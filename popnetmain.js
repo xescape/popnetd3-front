@@ -29,15 +29,16 @@
  */
 
 //TODO: User defined variables
-var url = "."
+var url = ".";
 var input = url + "/results/data3.json";
+var prefix = "popnet";
 
 
 //define size of the image element
 var base_width = 1280,
 	base_height = 720,
-	width = base_width * 2,
-	height = base_height * 2,
+	width = base_width * 4,
+	height = base_height * 4,
 	margin = 100,
 	scale = 5,
 	nodeRadius = 25,
@@ -128,7 +129,7 @@ var chrn
 var draw_state
 var node_list = []
 
-var cutoff = 0.5
+var cutoff = "0.5"
 var edge_weights = {
 	
 	0.90: 8,
@@ -193,12 +194,12 @@ document.getElementById("example").addEventListener("click", launch_example, fal
 
 function launch(){
 	id = document.getElementById('jobid').value
+	prefix = id
 	input = url + "/results/" + id + ".json"
 	svg.html("")
 	d3.json(input, function(d){ 
 		draw_state = draw(d)
-//		console.log('draw_state is now ' + draw_state)
-		redrawEdges(draw_state, document.getElementById("edge2").value)
+		redrawEdges(draw_state, "0.5")
 	})
 }
 
@@ -214,7 +215,6 @@ function launch_example(){
 	svg.html("")
 	d3.json(input, function(d){ 
 		draw_state = draw(d)
-		console.log('draw_state is now ' + draw_state)
 		redrawEdges(draw_state, document.getElementById("edge2").value)
 	})
 }
@@ -235,7 +235,7 @@ function draw(data){
 	simulation = d3.forceSimulation()
 		.force("link", d3.forceLink().id(function(d) { return d.name; }).strength(0))
 //		.force("charge", d3.forceManyBody().strength(0))
-		.force("collide",d3.forceCollide( function(d){return nodeRadius }).iterations(1))
+		// .force("collide",d3.forceCollide( function(d){return nodeRadius }).iterations(1))
 //		.force("center", d3.forceCenter(width / 2, height / 2));
 //		.force("y", d3.forceY(width/3))
 //	    .force("x", d3.forceX(height/3))
@@ -393,7 +393,7 @@ function draw(data){
 			edges.attr("x1", function(d){return d.source.x + nodeRadius + borderWidth;})
 				.attr("y1", function(d){return d.source.y + nodeRadius + borderWidth * 1.5;})
 				.attr("x2", function(d){return d.target.x + nodeRadius + borderWidth;})
-				.attr("y2", function(d){return d.target.y + nodeRadius + + borderWidth * 1.5;})
+				.attr("y2", function(d){return d.target.y + nodeRadius + borderWidth * 1.5;})
 				
 			nodes.attr("transform", function(d){
 				return "translate(" + d.x + "," + d.y + ")"});
@@ -402,10 +402,10 @@ function draw(data){
 				return "translate(" + d.x + "," + d.y + ")"});
 			
 			
-			d3.selectAll('.glink').attr("x1", function(d){return d.source.x;})
-			.attr("y1", function(d){return d.source.y;})
-			.attr("x2", function(d){return d.target.x + nodeRadius + borderWidth;})
-			.attr("y2", function(d){return d.target.y + nodeRadius + borderWidth;})
+			// d3.selectAll('.glink').attr("x1", function(d){return d.source.x;})
+			// .attr("y1", function(d){return d.source.y;})
+			// .attr("x2", function(d){return d.target.x + nodeRadius + borderWidth;})
+			// .attr("y2", function(d){return d.target.y + nodeRadius + borderWidth;})
 	});
 	
 	
@@ -453,7 +453,10 @@ function draw(data){
 	
 	groupForce(simulation, container);
 	groupCircle(simulation, true);
-	forceInit();
+	// forceInit();
+
+	redrawEdges({edges:edges}, edge_weights[cutoff])
+	console.log('draw complete')
 	
 	return {
 		simulation: simulation,
@@ -541,8 +544,8 @@ function draw(data){
 //				.attr('class' , 'glink');
 //		attachAttr(e, invisEdgeAttrs);
 				
-		sim.force('glink', d3.forceLink().id(function(d){return d.name;}).strength(0));
-		sim.force('glink').links(glinks);
+		// sim.force('glink', d3.forceLink().id(function(d){return d.name;}).strength(0));
+		// sim.force('glink').links(glinks);
 
 		return sim	
 	}
@@ -613,13 +616,9 @@ function translateEdge(p){
 function redrawEdges(state, cutoff){
 	
 //	console.log('cut off is ' + cutoff)
-	
 	state.edges.attr('visibility', 'hidden')
-	
 	state.edges.filter(function(d){ return d.width > cutoff}).attr('visibility', 'visible')
-	
 	return state
-	
 }
 
 //console.log('beep')
@@ -1027,53 +1026,20 @@ function groupCircle(simulation, reset = false){
 
 }
 
-//function save(){
-//    // Select the first svg element
-//    var thissvg = document.getElementById("popnet"),
-//    	img = new Image(),
-//        serializer = new XMLSerializer(),
-//        svgStr = serializer.serializeToString(thissvg),
-//		svgBlob = new Blob([svgStr], {type: 'image/svg+xml;charset=utf-8'}),
-//		DOMURL = window.URL || windows.webkitURL || window,
-//		url = DOMURL.createObjectURL(svgBlob),
-//		canvas = document.createElement("canvas"),
-//		scale = 10;
-//    
-//    document.body.appendChild(canvas);
-//    canvas.style.width = width + 'px';
-//    canvas.style.height = height + 'px';
-//    canvas.width = Math.ceil(width * scale);
-//    canvas.height = Math.ceil(height * scale);
-//    
-//    var ctx = canvas.getContext("2d")
-//    ctx.scale(scale, scale)
-//    
-//	img.onload = function () {
-//    	ctx.drawImage(img, 0, 0);
-//    	DOMURL.revokeObjectURL(url);
-//
-//	    var imgURI = canvas
-//	        .toDataURL('image/png')
-//	        .replace('image/png', 'image/octet-stream');
-//	    
-//	    triggerDownload(imgURI);
-//    }
-//    
-//	img.src = url
-//}
 function save_network(){
-	save('popnet', 'popnet.pdf')
+	save('popnet', prefix + '.pdf')
 }
 function save(to_save, name){
-	
 	var target = document.getElementById(to_save)
+	var x_offset = (document.getElementById("container").clientWidth - base_width) / 2
+	var y_offset = 45 + 67 + 64
 	doc = new PDFDocument({
 		size: [width, height]
 	})
 	stream = doc.pipe(blobStream())
 	
 	//add content
-	SVGtoPDF(doc, target, 0, 0, {useCSS:true})
+	SVGtoPDF(doc, target, x_offset, y_offset, {useCSS:true, width:width, height:height})
 	doc.end()
 	stream.on('finish', function(){
 //		blob = stream.toBlob('application/pdf')
@@ -1097,14 +1063,9 @@ function triggerDownload(imgURI, name){
 	a.dispatchEvent(evt);
 }    
 
-
-
-
 function redraw(state){
 	
 	var nodes = state.nodes
-	console.log('redraw')
-	console.log(nodes)
 	
 	nodes.each(function(){
 //		console.log(this)
@@ -1114,7 +1075,6 @@ function redraw(state){
 	
 	return state
 }
-
 
 function getLinear(){
 //	chr = 'CHR1'
