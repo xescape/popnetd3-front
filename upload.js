@@ -32,7 +32,7 @@ function submit(){
 			if(request.readyState == XMLHttpRequest.DONE && request.status == 200){
                 uploadSuccess()
 			}
-			else{
+			else if(request.status != 200){
 				uploadFail()
 			}
         }
