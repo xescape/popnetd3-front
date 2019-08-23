@@ -1,6 +1,8 @@
+#!/usr/bin/env node
 /**
  * 
  */
+
 
 const express = require('express')
 const back = require("./back.js")
