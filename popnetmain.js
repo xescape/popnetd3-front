@@ -590,7 +590,7 @@ function countChrs(ids){
 		}
 	}, 0)
 	
-	return n	
+	return Math.max(n, 1)	
 }
 
 function translateEdge(p){
