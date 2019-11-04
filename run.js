@@ -91,7 +91,7 @@ function run(req, res){
 			// }
 
 			if(!error){
-				var oldpath = folderpath + "/cytoscape/graph.json",
+				var oldpath = folderpath + "/" + id + ".json",
 					newpath = results + "/" + id + ".json",
 					oldheatpath = folderpath + "/Heatmaps.pdf",
 					newheatpath = folderpath + `/${id}_metrics.pdf`
