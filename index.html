@@ -122,15 +122,34 @@
 		    					<i class = 'material-icons' id = 'help3'>help</i>
 		    					<div class = "mdl-tooltip" for="help3"> Enter a name only if your input table has a REF column. Otherwise put 'None' </div>
 		    				</button>
-						 </div>	
+						</div>
+						
+						<div class = "hflex">
+							<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label getmdl-select getmdl-select__fix-height entry">
+								<input class="mdl-textfield__input" id="autogroup" value="" type="text" readonly>
+								<input type="hidden" value="" name="autogroup">
+							 	<i class="mdl-icon-toggle__label material-icons">keyboard_arrow_down</i> 
+									<label for="autogroup" class="mdl-textfield__label">Auto-group</label>
+									<ul for="autogroup" class="mdl-menu mdl-menu--bottom-left mdl-js-menu">
+									  <li class="mdl-menu__item" data-val="true" data-selected="true">True</li>
+									  <li class="mdl-menu__item" data-val="false">False</li>
+									  <!--<li class="mdl-menu__item" data-val="nuc">Nucmer(In Development)</li>-->
+									</ul>
+						 	</div>
+						  
+							<button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored tooltip" id="button-help">
+								<i class = 'material-icons' id = 'help3'>help</i>
+								<div class = "mdl-tooltip" for="help3"> Enter a name only if your input table has a REF column. Otherwise put 'None' </div>
+							</button>
+					  </div>
 						 
-						 <div class = "hflex" style="display:inline-block;height:67px;width:382px;"></div>
+						<!-- <div class = "hflex" style="display:inline-block;height:67px;width:382px;"></div> -->
 					</div>
 		
 		    		<div class = 'vflex'>
 		    			<div class = "hflex">
 			    			<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label entry">
-		    					<input class="mdl-textfield__input" type="text" id = "ival" />
+		    					<input class="mdl-textfield__input" type="text" id = "ival" disabled/>
 		    					<label class="mdl-textfield__label" for="reference"> I Value </label>
 		    				</div>
 		    				
@@ -144,7 +163,7 @@
 	    				</div>
 	    				<div class = "hflex">
 		    				<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label entry">
-		    					<input class="mdl-textfield__input" type="text" id = "pival" />
+		    					<input class="mdl-textfield__input" type="text" id = "pival" disabled/>
 		    					<label class="mdl-textfield__label" for="reference"> pI Value </label>
 		    				</div>
 		    				

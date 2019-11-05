@@ -1,6 +1,21 @@
 //has code for the upload page. should be decoupled from the other pages.
 
 document.getElementById("submit").addEventListener("click", submit, false);
+document.getElementById("autogroup").addEventListener("change", modIVal);
+
+function modIVal(){
+	var source = document.getElementById("autogroup")
+	var i = document.getElementById("ival")
+	var pi = document.getElementById("pival")
+	if(source.value === "True"){
+		i.disabled = true
+		pi.disabled = true
+	}
+	else{
+		i.disabled = false
+		pi.disabled = false 
+	}
+}
 
 function submit(){	
 	var config = new FormData(),
@@ -10,6 +25,7 @@ function submit(){
 
 	config.append('format', document.getElementById("input").value)
 	config.append('reference', document.getElementById("reference").value)
+	config.append('autogroup', document.getElementById("autogroup").value)
 	config.append('ival', document.getElementById("ival").value)
 	config.append('pival', document.getElementById("pival").value)
 	config.append('sl', document.getElementById("sl").value)
@@ -61,28 +77,44 @@ function uploadTimeOut(){
 
 function validateForm(form){
 	
-	//make sure no empty fields
+	//make sure no empty fields, unless we're autogrouping, then ival and pival can be empty
+	var exempt
+	if(form.get('autogroup')==='True'){
+		exempt = ['ival', 'pival']
+	}
+	else{
+		exempt = []
+	}
+
 	for(let pair of form){
-		if(pair[1] === ""){
+		if(pair[1] === "" && !exempt.includes(pair[0])){
 			alert(pair[0] + ' is empty. Please fill in all fields.')
 			return false
 		}
 	}
 	
-	//make sure numbers are numbers
-	for(let i of ['ival', 'pival', 'sl']){
-		if(isNaN(parseInt(form.get(i)))){
-			alert(i + ' is not a number.')
+	//check ival and pival if not autogrouping
+	if(!form.get('autogroup')==="True"){
+		for(let i of ['ival', 'pival']){
+			if(isNaN(parseInt(form.get(i)))){
+				alert(i + ' is not a number.')
+				return false
+			}
+		}
+
+		//make sure params are within range.
+		if(!(18 >= parseInt(form.get('ival')) > 0 && 4 >= parseInt(form.get('pival')) > 0)){ 
+			alert("Please set appropriate cluster parameters according to tooltip.")
 			return false
 		}
 	}
-	
-	//make sure params are within range.
-	if(!(18 >= parseInt(form.get('ival')) >= 1 && 4 >= parseInt(form.get('pival')) >= 1 && parseInt(form.get('sl')) > 0)){ 
-		alert("Please set appropriate cluster parameters according to tooltip.")
+
+	var sl = form.get("sl")
+	if(isNaN(parseInt(sl)) || parseInt(sl) < 1){
+		alert("Section length must be greater than 0")
 		return false
 	}
-	
+
 	return true
 }
 

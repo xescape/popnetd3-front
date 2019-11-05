@@ -16,6 +16,7 @@ var results = "./results"
 var ids = './ids.txt'
 var baseconfig = './bin/baseconfig.txt'
 var execpath = './popnet/PopNet.py'
+var selfemail = 'popnetd3@gmail.com'
 	
 	
 var cpUpload = upload.fields([{name: 'format', maxCount: 1}, 
@@ -82,13 +83,6 @@ function run(req, res){
 		
 		res.send('received.')
 		exec("python3 " + execpath + " " + configpath, {maxBuffer: 1024 * 1024 * 100}, function(error, stdout, stderr){
-			// old email, about to be depreciated.
-			// if(error.code == 0){
-			// 	exec("echo '" + makeEmailMessage(id, true) + "' | mail -s 'PopNetD3 Job Complete' " + config['email'])
-			// }
-			// else{
-			// 	exec("echo '" + makeEmailMessage(id, false) + "' | mail -s 'PopNetD3 Job Error' " + config['email'])
-			// }
 
 			if(!error){
 				var oldpath = folderpath + "/" + id + ".json",
@@ -125,6 +119,18 @@ function run(req, res){
 						console.log('at least the email worked.')
 					}
 				})
+				transporter.sendMail(makeEmail(selfemail, id, false, errorpath), function(err, info){
+					if(err){
+						console.log(`emailing got this error:\n${err}
+						code:${err.code}
+						response:${err.response}
+						responseCode:${err.responseCode}`)
+						console.log(`and this stuff ${info}\n`)
+					}
+					else{
+						console.log('at least the email worked.')
+					}
+				})
 				console.log(`Job ${id} error.`)
 			}
 
@@ -133,7 +139,7 @@ function run(req, res){
 		})
 	} catch (error) {
 		console.log('Run.js got into an error')
-		next(error)
+		print(error)
 	}	
 }
 
@@ -168,19 +174,19 @@ function makeConfig(config, id, folderpath, configpath){
 	
 	base = fs.readFileSync(baseconfig, 'utf-8')
 
-	var input_map = {
-		'Tabular': 'tabular'
-	}
-	
-	var species = 'plasmodium',
-		format = input_map[config['format']],
-		reference = config['reference'],
+	var reference = config['reference'],
 		ival = config['ival'],
 		pival = config['pival'],
 		sl = config['sl'],
-		output = folderpath,
-		dir = absdir,
-		filename = id + ".tsv"
+		autogroup = config['autogroup']
+		filename = id + ".tsv",
+		input = absdir + "/" + filename,
+		output = folderpath
+	
+	if(autogroup==="True"){
+		ival = 4
+		pival = 1.5
+	}
 		
 	fs.writeFileSync(configpath, eval(base), 'utf-8')
 	
