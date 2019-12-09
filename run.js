@@ -97,7 +97,7 @@ function run(req, res){
 								console.log(`emailing got this error:\n${err.message}`)
 							}
 							if(success){
-								console.log('at least the email worked.')
+								console.log(`email sent to ${config.email}.`)
 							}
 						}) //the last thing is for the error message
 						console.log("Job " + id + " complete.")
@@ -181,7 +181,8 @@ function makeConfig(config, id, folderpath, configpath){
 		autogroup = config['autogroup']
 		filename = id + ".tsv",
 		input = absdir + "/" + filename,
-		output = folderpath
+		output = folderpath,
+		email = config['email']
 	
 	if(autogroup==="True"){
 		ival = 4

@@ -25,6 +25,8 @@ S2_piVal=${pival}
 
 #whether to autogroup
 autogroup=${autogroup}
+
+#the email is: ${email}
 `
 
 

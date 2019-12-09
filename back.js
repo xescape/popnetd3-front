@@ -38,7 +38,7 @@ function changeSettings(req, res){
 }
 
 function getLinChr(req, res){
-	console.log('linear request received')
+	// console.log('linear request received')
 	var params = parseLinearParams(req)
 	params['outpath'] = '/c/' + params['file'] + '/linear.png'
 	
@@ -54,7 +54,7 @@ function getLinChr(req, res){
 
 
 function getPainting(req, res){
-	console.log('getpainting called once')
+	// console.log('getpainting called once')
 	
 	var params = parseParams(req)
 	params['outpath'] = '/c/' + params['file'] + '/' + params['id'] + "\_" + params['chr'] + '.png'
@@ -64,29 +64,29 @@ function getPainting(req, res){
 			fs.writeFileSync(__dirname + params['outpath'], buffer, function(err){
 				console.log('write file ' + err)
 			})
-			console.log('sending '+ params['outpath'])
+			// console.log('sending '+ params['outpath'])
 			res.sendFile(params['outpath'], {root : __dirname}, function(err){ if(err) console.log('sendfile error, ' + err)})
 		})
 		.catch(function(err){console.log('svg2png error ' + err)})
 	}
 	else{
-		console.log('sending '+ params['outpath'])
+		// console.log('sending '+ params['outpath'])
 		res.sendFile(params['outpath'], {root : __dirname}, function(err){ if(err) console.log('sendfile error, ' + err)})
 	}
 }
 
 function getSVG(req, res){
-	console.log('getsvg called once')
+	// console.log('getsvg called once')
 	var d3n = drawSVG(parseParams(req))
 //	console.log(d3n.svgString().substring(0,100))
-	console.log('sending svg ' + d3n.svgString().substring(0,100))
+	// console.log('sending svg ' + d3n.svgString().substring(0,100))
 	res.send(d3n.svgString())
 }
 
 
 function draw(params){
 	
-	console.log('drawing' + params['id'] + params['chr'])
+	// console.log('drawing' + params['id'] + params['chr'])
 	var outpath = params['outpath']
 	
 	d3n = new d3node()
@@ -99,7 +99,7 @@ function draw(params){
 	var svgBuffer = new Buffer(d3n.svgString(), 'utf-8')
 	
 	
-	console.log('draw ends for ' + outpath)
+	// console.log('draw ends for ' + outpath)
 	return svgBuffer
 }
 
@@ -108,11 +108,11 @@ function drawSVG(params){
 	d3n = new d3node()
 	
 	if(!params['chr'] === 'all'){
-		console.log('tried to generate svg for chr')
+		// console.log('tried to generate svg for chr')
 		return d3n.append('svg')
 	}
 	
-	console.log('drawing svg once')
+	// console.log('drawing svg once')
 	
 	if(settings === null){settings = JSON.parse(fs.readFileSync(settingspath, 'utf8'))}
 	
@@ -144,7 +144,7 @@ function parseParams(req){
 	}
 	else{
 		if(reload){
-			console.log('clearing ' + dir)
+			// console.log('clearing ' + dir)
 			fs.removeSync(dir)
 			fs.mkdirSync(dir)
 			reload = false
@@ -281,7 +281,7 @@ function paintChr(node, colorTable, outpath, mode = 'PNG'){
 			.attr("name", node.name)
 			.append("g")
 				.attr("transform", "translate(" + (nodeRadius + borderWidth * 2) + "," + (nodeRadius + borderWidth * 2)  + ")");
-	console.log('height is ' + (nodeRadius + borderWidth * 2) * 2 + settings.labelAttrs['font-size'])
+	// console.log('height is ' + (nodeRadius + borderWidth * 2) * 2 + settings.labelAttrs['font-size'])
 	
 	var	arc = d3.arc()
 		.outerRadius(nodeRadius - 10)
@@ -443,7 +443,7 @@ function makeDefaultSettings(path){
 	
 	fs.writeFile(path, JSON.stringify(settings), function(e){
 		if(e){
-			console.log("error error")
+			console.log("error writing settings")
 		}
 
 	})
