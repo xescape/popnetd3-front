@@ -211,9 +211,13 @@ A copy of the clustering metrics is attached. Please refer to the tutorial secti
 Thank you for using PopNetD3!
 `
 
-
-		mailOptions.attachments = [{
-			path: attachment}]
+		try{
+			mailOptions.attachments = [{
+				path: attachment}];
+		} catch(error){
+			console.log(`job {id} did not have a heatmap attachment`)
+		}
+		
 	}
 	else{
 		mailOptions.subject = 'PopNetD3 Job Error'
