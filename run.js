@@ -212,8 +212,11 @@ Thank you for using PopNetD3!
 `
 
 		try{
-			mailOptions.attachments = [{
+			if (fs.existsSync(attachment)){
+				mailOptions.attachments = [{
 				path: attachment}];
+			}
+			
 		} catch(error){
 			console.log(`job {id} did not have a heatmap attachment`)
 		}
@@ -226,11 +229,12 @@ Hello,
 
 Your PopNet job ran into an error. The job ID was ${id}. Please reply to this email if you require further assistance.
 
-A copy of the error log is attached.
+A copy of the error log is attached if available.
 `
-
-		mailOptions.attachments = [{
+		if (fs.existsSync(attachment)){
+			mailOptions.attachments = [{
 			path: attachment}]
+		}
 	}
 
 	console.log(`tried to attach ${attachment}`)
