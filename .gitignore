@@ -1,2 +1,7 @@
 /c/*
 /data/*
+/node_modules
+/node_modules/*
+/popnet
+/popnet/*
+ids.txt

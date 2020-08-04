@@ -29,15 +29,16 @@
  */
 
 //TODO: User defined variables
-var url = "."
+var url = ".";
 var input = url + "/results/data3.json";
+var prefix = "popnet";
 
 
 //define size of the image element
 var base_width = 1280,
 	base_height = 720,
-	width = base_width * 2,
-	height = base_height * 2,
+	width = base_width * 4,
+	height = base_height * 4,
 	margin = 100,
 	scale = 5,
 	nodeRadius = 25,
@@ -128,7 +129,7 @@ var chrn
 var draw_state
 var node_list = []
 
-var cutoff = 0.5
+var cutoff = "0.5"
 var edge_weights = {
 	
 	0.90: 8,
@@ -167,7 +168,7 @@ document.getElementById("button-reset").addEventListener("click", function(){
 	d3.json(input, function(d){ draw_state = draw(d)})
 })
 
-document.getElementById("button-save").addEventListener("click", save, false);
+document.getElementById("button-save").addEventListener("click", save_network, false);
 
 document.getElementById("button-linear").addEventListener("click", getLinear, false);
 
@@ -183,62 +184,29 @@ document.getElementById("uploadBtn").onchange = function () {
     document.getElementById("uploadFile").value = this.files[0].name;
 };
 
-document.getElementById("submit").addEventListener("click", submit, false);
+
 
 document.getElementById("launch").addEventListener("click", launch, false);
+document.getElementById("jobid").addEventListener("keypress", launchByKey, false);
 
 document.getElementById("example").addEventListener("click", launch_example, false);
 
 
-
-function submit(){
-	
-	console.log("submitting")
-	var config = new FormData(),
-		ival = document.getElementById("ival").value,
-		pival = document.getElementById("pival").value,
-		sl = document.getElementById("sl").value
-		
-	config.append('test', 'asdf')
-	config.append('species', document.getElementById("species").value)
-	config.append('format', document.getElementById("input").value)
-	config.append('reference', document.getElementById("reference").value)
-	config.append('ival', document.getElementById("ival").value)
-	config.append('pival', document.getElementById("pival").value)
-	config.append('sl', document.getElementById("sl").value)
-	config.append('file', document.getElementById("uploadBtn").files[0], document.getElementById("uploadBtn").files[0].name)
-	config.append('email', document.getElementById("email").value)
-	
-	
-	console.log(config)
-	
-	if(0 > ival > 20 || 0 > pival > 20 || 0 > sl){ alert("Please set appropriate cluster parameters according to tooltip.")}
-	else{
-		
-		var request = new XMLHttpRequest();
-		request.open('POST', url + "/data/run")
-		
-		request.onreadystatechange = function(){
-			if(request.readyState == XMLHttpRequest.DONE && request.status == 200){
-				alert('Your job has been received. Please wait for an email response when it is completed.')
-			}
-		}
-		
-		request.send(config)
-	}
-	
-	
-}
-
 function launch(){
 	id = document.getElementById('jobid').value
+	prefix = id
 	input = url + "/results/" + id + ".json"
 	svg.html("")
 	d3.json(input, function(d){ 
 		draw_state = draw(d)
-		console.log('draw_state is now ' + draw_state)
-		redrawEdges(draw_state, document.getElementById("edge2").value)
+		redrawEdges(draw_state, "0.5")
 	})
+}
+
+function launchByKey(e){
+	if(e.key == 'Enter'){
+		launch()
+	}
 }
 
 function launch_example(){
@@ -247,7 +215,6 @@ function launch_example(){
 	svg.html("")
 	d3.json(input, function(d){ 
 		draw_state = draw(d)
-		console.log('draw_state is now ' + draw_state)
 		redrawEdges(draw_state, document.getElementById("edge2").value)
 	})
 }
@@ -268,7 +235,7 @@ function draw(data){
 	simulation = d3.forceSimulation()
 		.force("link", d3.forceLink().id(function(d) { return d.name; }).strength(0))
 //		.force("charge", d3.forceManyBody().strength(0))
-		.force("collide",d3.forceCollide( function(d){return nodeRadius }).iterations(1))
+		// .force("collide",d3.forceCollide( function(d){return nodeRadius }).iterations(1))
 //		.force("center", d3.forceCenter(width / 2, height / 2));
 //		.force("y", d3.forceY(width/3))
 //	    .force("x", d3.forceX(height/3))
@@ -426,7 +393,7 @@ function draw(data){
 			edges.attr("x1", function(d){return d.source.x + nodeRadius + borderWidth;})
 				.attr("y1", function(d){return d.source.y + nodeRadius + borderWidth * 1.5;})
 				.attr("x2", function(d){return d.target.x + nodeRadius + borderWidth;})
-				.attr("y2", function(d){return d.target.y + nodeRadius + + borderWidth * 1.5;})
+				.attr("y2", function(d){return d.target.y + nodeRadius + borderWidth * 1.5;})
 				
 			nodes.attr("transform", function(d){
 				return "translate(" + d.x + "," + d.y + ")"});
@@ -435,10 +402,10 @@ function draw(data){
 				return "translate(" + d.x + "," + d.y + ")"});
 			
 			
-			d3.selectAll('.glink').attr("x1", function(d){return d.source.x;})
-			.attr("y1", function(d){return d.source.y;})
-			.attr("x2", function(d){return d.target.x + nodeRadius + borderWidth;})
-			.attr("y2", function(d){return d.target.y + nodeRadius + borderWidth;})
+			// d3.selectAll('.glink').attr("x1", function(d){return d.source.x;})
+			// .attr("y1", function(d){return d.source.y;})
+			// .attr("x2", function(d){return d.target.x + nodeRadius + borderWidth;})
+			// .attr("y2", function(d){return d.target.y + nodeRadius + borderWidth;})
 	});
 	
 	
@@ -486,7 +453,10 @@ function draw(data){
 	
 	groupForce(simulation, container);
 	groupCircle(simulation, true);
-	forceInit();
+	// forceInit();
+
+	redrawEdges({edges:edges}, edge_weights[cutoff])
+	console.log('draw complete')
 	
 	return {
 		simulation: simulation,
@@ -574,8 +544,8 @@ function draw(data){
 //				.attr('class' , 'glink');
 //		attachAttr(e, invisEdgeAttrs);
 				
-		sim.force('glink', d3.forceLink().id(function(d){return d.name;}).strength(0));
-		sim.force('glink').links(glinks);
+		// sim.force('glink', d3.forceLink().id(function(d){return d.name;}).strength(0));
+		// sim.force('glink').links(glinks);
 
 		return sim	
 	}
@@ -593,7 +563,7 @@ function updateChrs(n){
 	}).join('')
 	
 	document.getElementById('chr_select').innerHTML = all + html;
-	getmdlSelect.init('.getmdl-select')
+	getmdlSelect.init('#chr_container')
 }
 
 
@@ -605,7 +575,7 @@ function updateEdgeCutoff(){
 	}).join('')
 	
 	document.getElementById('edge_select').innerHTML = all + html;
-	getmdlSelect.init('.getmdl-select')
+	getmdlSelect.init('#edge_container')
 }
 
 
@@ -620,7 +590,7 @@ function countChrs(ids){
 		}
 	}, 0)
 	
-	return n	
+	return Math.max(n, 1)	
 }
 
 function translateEdge(p){
@@ -629,8 +599,8 @@ function translateEdge(p){
 	var a = edge_weight_keys.map(function(a){return Math.abs(parseFloat(a) - p)})
 	var b = a.indexOf(Math.min(...a))
 	
-	console.log(p)
-	console.log(a)
+//	console.log(p)
+//	console.log(a)
 	
 //	console.log('value ' + p + ' translated to ' + edge_weights[edge_weight_keys[b]])
 	if(edge_weight_keys[b] <= p){
@@ -645,14 +615,10 @@ function translateEdge(p){
 
 function redrawEdges(state, cutoff){
 	
-	console.log('cut off is ' + cutoff)
-	
+//	console.log('cut off is ' + cutoff)
 	state.edges.attr('visibility', 'hidden')
-	
 	state.edges.filter(function(d){ return d.width > cutoff}).attr('visibility', 'visible')
-	
 	return state
-	
 }
 
 //console.log('beep')
@@ -830,6 +796,9 @@ function getChr(node){
 			
 		})
 	})
+	//stop here.
+	
+	
 //	return e
 	
 	
@@ -986,9 +955,7 @@ function groupCircle(simulation, reset = false){
 		var k = 8 //8 more per ring
 		var rings = calcRings(n, k, k) //inner ring
 		var results = rings.map(function(n, i){ return placeNodes(g, n, i, k)})
-		
-		console.log(results)
-		
+	
 		return results.reduce(function(a, b){ return a.concat(b)}, [])
 		
 		
@@ -1059,60 +1026,29 @@ function groupCircle(simulation, reset = false){
 
 }
 
-//function save(){
-//    // Select the first svg element
-//    var thissvg = document.getElementById("popnet"),
-//    	img = new Image(),
-//        serializer = new XMLSerializer(),
-//        svgStr = serializer.serializeToString(thissvg),
-//		svgBlob = new Blob([svgStr], {type: 'image/svg+xml;charset=utf-8'}),
-//		DOMURL = window.URL || windows.webkitURL || window,
-//		url = DOMURL.createObjectURL(svgBlob),
-//		canvas = document.createElement("canvas"),
-//		scale = 10;
-//    
-//    document.body.appendChild(canvas);
-//    canvas.style.width = width + 'px';
-//    canvas.style.height = height + 'px';
-//    canvas.width = Math.ceil(width * scale);
-//    canvas.height = Math.ceil(height * scale);
-//    
-//    var ctx = canvas.getContext("2d")
-//    ctx.scale(scale, scale)
-//    
-//	img.onload = function () {
-//    	ctx.drawImage(img, 0, 0);
-//    	DOMURL.revokeObjectURL(url);
-//
-//	    var imgURI = canvas
-//	        .toDataURL('image/png')
-//	        .replace('image/png', 'image/octet-stream');
-//	    
-//	    triggerDownload(imgURI);
-//    }
-//    
-//	img.src = url
-//}
-
-function save(){
-	
-	var target = document.getElementById("popnet")
+function save_network(){
+	save('popnet', prefix + '.pdf')
+}
+function save(to_save, name){
+	var target = document.getElementById(to_save)
+	var x_offset = (document.getElementById("container").clientWidth - base_width) / 2
+	var y_offset = 45 + 67 + 64
 	doc = new PDFDocument({
 		size: [width, height]
 	})
 	stream = doc.pipe(blobStream())
 	
 	//add content
-	SVGtoPDF(doc, target, 0, 0, {useCSS:true})
+	SVGtoPDF(doc, target, x_offset, y_offset, {useCSS:true, width:width, height:height})
 	doc.end()
 	stream.on('finish', function(){
 //		blob = stream.toBlob('application/pdf')
 		url = stream.toBlobURL('application/pdf')
-		triggerDownload(url);
+		triggerDownload(url, name);
 	})
 }
 
-function triggerDownload(imgURI){
+function triggerDownload(imgURI, name){
     var evt = new MouseEvent('click', {
         view: window,
         bubbles: false,
@@ -1120,21 +1056,16 @@ function triggerDownload(imgURI){
       });
 
 	var a = document.getElementById('dl');
-	a.setAttribute('download', 'popnet.pdf');
+	a.setAttribute('download', name);
 	a.setAttribute('href', imgURI);
 	a.setAttribute('target', '_blank');
 	
 	a.dispatchEvent(evt);
 }    
 
-
-
-
 function redraw(state){
 	
 	var nodes = state.nodes
-	console.log('redraw')
-	console.log(nodes)
 	
 	nodes.each(function(){
 //		console.log(this)
@@ -1144,7 +1075,6 @@ function redraw(state){
 	
 	return state
 }
-
 
 function getLinear(){
 //	chr = 'CHR1'
@@ -1156,7 +1086,7 @@ function getLinear(){
 		
 		createLinearPanel()
 		
-		var length = 900,
+		var length = 900, //the drawn bars will always be max 900. With the other params listed here as well.
 			height = 40,
 			front = 300,
 			margin = {top: 20, right: 20, bottom: 30, left: 20},
@@ -1175,9 +1105,12 @@ function getLinear(){
 		
 		var path = "./c/" + file + "/" + attach + ".linear"
 		
-		svg.attr("width", length + padding[1] + padding[3] + front + margin.left + margin.right)
-		 .attr("height", (height + padding[0] + padding[2]) * node_list.length + 1 + margin.top + margin.bottom)
+		var width_attr = length + padding[1] + padding[3] + front + margin.left + margin.right
+				height_attr = (height + padding[0] + padding[2]) * (node_list.length + 1) + margin.top + margin.bottom
+
+		svg.attr("viewBox", `0, 0, ${width_attr}, ${height_attr}`)
 		 .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+		 .attr("id", "chr_painting")
 		
 //		svg.attr("height", (nodeRadius * 2 + borderWidth * 4) * settings.scale + labelAttrs.y)
 //		.attr("width", (nodeRadius * 2 + borderWidth * 4) * settings.scale)
@@ -1185,7 +1118,11 @@ function getLinear(){
 	//	.attr("transform", "scale(" + 0.1 + ")")
 		
 		getDataURI(path, function(uri){
-			svg.append("image").attr("xlink:href", uri)		
+			svg.append("image").attr("xlink:href", uri)
+				 .attr("viewBox", `0, 0, ${width_attr}, ${height_attr}`)
+				 .attr('height', `${height_attr}`)
+				 .attr('width', `${width_attr}`)	
+
 			document.getElementById('linear_panel').appendChild(e)
 		})
 		
@@ -1211,17 +1148,19 @@ function getLinear(){
 
 function createLinearPanel(){
 	
-	var container = document.getElementById('graph_container')
+	var container = document.getElementById('container')
 	var outer = document.createElement('div')
 	var top = document.createElement('div')
 	var tt = document.createElement('div')
 	var main = document.createElement('div')
 	var close = document.createElement('button')
+	var dl = document.createElement('button')
 	
 	container.append(outer)
 	outer.appendChild(top)
 	top.appendChild(tt)
 	top.appendChild(close)
+	top.appendChild(dl)
 	outer.appendChild(main)
 	
 	
@@ -1231,44 +1170,113 @@ function createLinearPanel(){
 //	tt.classList.add("mdl-card__title-text")
 	main.classList.add("mdl-card__media")
 	main.classList.add("mdl-card__border")
+	close.classList.add("mdl-button")
+	close.classList.add("mdl-js-button")
+	close.classList.add("mdl-button--icon")
+	close.classList.add("tooltip")
+	dl.classList.add("mdl-button")
+	dl.classList.add("mdl-js-button")
+	dl.classList.add("mdl-button--icon")
+	dl.classList.add("tooltip")
+
 	
 	outer.id = 'linear'
-	outer.style.width = 'fit-content'
+	outer.style.width = '1100px'
+	outer.style.height = 'auto'
+	outer.style.maxHeight = '600px'
 	outer.style.position = 'absolute'
 	outer.style.right = '20px'
 	outer.style.bottom = '80px'
 	outer.style.zIndex = '100'
 	outer.style.border = '1px solid black'
-	outer.style.overflow = 'auto'
+	outer.style.overflow = 'hidden'
 	outer.style.display = 'block'
 	
 	main.id = 'linear_panel'
-	main.style.backgroundColor = 'white' 
+	main.style.backgroundColor = 'white'
+	main.style.overflow='auto'
+	main.style.minHeight = '200px'
+	main.style.maxHeight = '600px'
 	top.id = 'linear_header'
 	top.style.height = '10px'
 	top.style.backgroundColor = '#3f51b5'
 //	top.style.position = "relative"
 
+	//title text
 	tt.style.fontSize = '12pt'	
 	tt.style.color = 'white'
 	tt.innerHTML = "Chromosome Alignment Panel"
 	
-	close.innerHTML = '<i class="material-icons">close</i>'
+	//close button
+	close.id = "close_button"
 	close.style.outline = "none"
 	close.style.backgroundColor = "Transparent"
 	close.style.overflow = "hidden"
 	close.style.border = "0px solid black"
 	close.style.position = "absolute"
 	close.style.right = "10px"
+	close.style.margin = "0px"
+	close.style.padding = "0px"
 	close.addEventListener('click', removeLinearPanel)
-		
+
+	//the close icon
+	close_icon = document.createElement('i')
+	close_icon.id = 'close_icon'
+	close_icon.classList.add('material-icons')
+	close_icon.innerHTML = 'close'
+
+	close_icon_tt = document.createElement('div')
+	close_icon_tt.classList.add('mdl-tooltip')
+	close_icon_tt.setAttribute('for', 'close_icon')
+	close_icon_tt.innerHTML = 'close'
+
+	close.appendChild(close_icon)
+	close.appendChild(close_icon_tt)
+
+	componentHandler.upgradeElement(close)
+	componentHandler.upgradeElement(close_icon)
+	componentHandler.upgradeElement(close_icon_tt)
+
+	//download button
+	dl.id = "download_painting"
+	dl.style.outline = "none"
+	dl.style.backgroundColor = "Transparent"
+	dl.style.overflow = "hidden"
+	dl.style.border = "0px solid black"
+	dl.style.position = "absolute"
+	dl.style.right = "50px"
+	dl.style.margin = "0px"
+	dl.style.padding = "0px"
+	dl.addEventListener('click', save_painting)
+
+	//the download icon
+	dl_icon = document.createElement('i')
+	dl_icon.id = 'dl_icon'
+	dl_icon.classList.add('material-icons')
+	dl_icon.innerHTML = 'save'
+
+	dl_icon_tt = document.createElement('div')
+	dl_icon_tt.classList.add('mdl-tooltip')
+	dl_icon_tt.setAttribute('for', 'dl_icon')
+	dl_icon_tt.innerHTML = 'save'
+
+	dl.appendChild(dl_icon)
+	dl.appendChild(dl_icon_tt)
+
+	componentHandler.upgradeElement(dl)
+	componentHandler.upgradeElement(dl_icon)
+	componentHandler.upgradeElement(dl_icon_tt)	
 	dragElement(outer)
 }
 
 function removeLinearPanel(){
-	document.getElementById('graph_container').removeChild(document.getElementById('linear'))
+	document.getElementById('container').removeChild(document.getElementById('linear'))
 }
 
+function save_painting(){
+	imgURI = document.getElementById("chr_painting").childNodes[0].getAttribute('href')
+	triggerDownload(imgURI, 'chromosome_painting.png')
+}
 
 function dragElement(elmnt) {
 	  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
@@ -1327,6 +1335,8 @@ function minEdges(array, min){
 
 	  return array
 }
+
+
     // You could also use the actual string without base64 encoding it:
     //img.src = "data:image/svg+xml;utf8," + svgStr;
 

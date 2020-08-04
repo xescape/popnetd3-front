@@ -3,7 +3,7 @@
 
 **Prerequisites**  
 
-Data Format: Currently, we only accept tabular SNP data as input. An example can be viewed [here](./bin/toxo20.txt). The requirements are:
+Data Format: Currently, we only accept tabular SNP data as input. An example can be viewed [here](./bin/SNPTable.txt). The requirements are:
 
   1. Elements in a row are separated by tabs (the \\t character).
   2. The header row begin with '#CHROM', followed by 'POS', followed by a list of sample names. The sample names should be short, and consist only of alphanumeric characters (A-Z, 0-9)
@@ -21,13 +21,13 @@ The 'Submit Job' tab can be used to submit jobs to be run on our server. Current
 
 ![Job Submission Page](./bin/submission.png)
 
-  1. Species: Select Toxoplasma or Saccharomyces if the data is from these species, otherwise leave as the default.
-  2. Input Format: Currently, leave this as the default.
-  3. Reference Sample: The name of the reference sample used to call the SNPs. Should also be the first sample in the data.
-  4. I Value: This value affects the groups formed by PopNet. Put 0 to use an auto-generated value.*
-  5. pI Value: Related to the I Value. Put 0 to use an auto-generated value.
-  6. Section Length: Controls how long each section in the chromosome painting is. This value should be related to the organism's genome size. For larger genomes (>20Mb), we recommend 10,000. For smaller genomes (<5Mb) we recommend 5,000. For intermediate genomes, we recommend 8000. 
-  7. Email Address: Please submit an email address so we can send you a notification when the job is done, the job id, as well as additional diagnostic data. It won't be possible to retrieve the results of a job if no email address was provided.
+  1. Input Format: Currently, leave this as the default.
+  2. Reference Sample: The name of the reference sample used to call the SNPs. Should also be the first sample in the data.
+  3. I Value: This value affects the groups formed by PopNet. Put 0 to use an auto-generated value.*
+  4. pI Value: Related to the I Value. Put 0 to use an auto-generated value.
+  5. Section Length: Controls how long each section in the chromosome painting is. This value should be related to the organism's genome size. For larger genomes (>20Mb), we recommend 10,000. For smaller genomes (<5Mb) we recommend 5,000. For intermediate genomes, we recommend 8000. 
+  6. Email Address: Please submit an email address so we can send you a notification when the job is done, the job id, as well as additional diagnostic data. It won't be possible to retrieve the results of a job if no email address was provided.
+  7. Attach File: Select the file to be uploaded here. 
 
   ------------
 
@@ -49,6 +49,17 @@ This is where you can view, manipulate, and save the results of your job as a PD
   6. Chromosome Alignment: Opens the chromosome alignment window (A), showing an aligned view of the current chromosome for all selected nodes. Nodes can be selected from the network viewer by clicking on the node. A selected node will be colored yellow. Note that if there are more than one chromosomes, a node can only be selected after the view has been expanded to a single chromosome.   
   7. Select Chromosome: Select a chromosome by number. Behaves similarly to clicking on a chromosome in the network view. 
   8. Select Edge Cutoff: Edges with similarity value below the selected cutoff will not be displayed.
+
+**Clustering Metrics**
+
+Number of Clusters: The clustering should be stable across a range of I values. 
+
+Efficiency: The clustering should have high efficiency. 
+
+Inter/Intra-Cluster Distance: The clustering should have a high inter-cluster distance and low intra-cluster distance. However, most parameters will result in a trade off 
+between these two metrics. You should prioritize inter-cluster distance if separation is more important, and intra-cluster distance if similarity is more important.
+
+The default parameters, 4 and 1.5, give the best result in most test cases. However, it can make sense to increase the values to yield a finer clustering, or to do the opposite.
 
  
 

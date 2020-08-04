@@ -65,7 +65,31 @@ div.entry{
 	width: 50px;
 }
 
-body{
+body, html{
+	height: 100%;
+}
+
+#greycover{
+	width: 5000px;
+	height: 100%;
+	min-height: 816px;
+	background: grey;
+	opacity: 0.5;
+	position: absolute;
+	z-index: 5;
+}
+
+#loadingbox{
+	width: 250px;
+	height: 55px;
+	min-height: 55px;
+	margin: auto;
+	display: flex;
+	flex-direction: column;
+	position: absolute;
+	top:50%;
+	background: white;
+	z-index: 10;
 }
 
 #ex_block1{
@@ -91,18 +115,22 @@ body{
 	margin: 100px 50px 0px 10px;
 }
 
+#vis_bar_container{
+	display: flex;
+	flex-direction: row;
+	padding: 20px 0;
+}
 #chr_container{
-	padding: 5px;
+	margin: 0px 10px;
 }
 
 #edge_container{
-	padding: 5px;
+	margin: 0px 10px;
 	width: 150px;
 }
 
 
 #uploadBtn{
-	
 	left: 0px;
 	bottom: 15px;
 }
@@ -240,7 +268,10 @@ body{
 
 #header{
 	background-image: url('bin/banner.png');
-	background-position: bottom;
+	background-position: left bottom;
+	background-size: auto 100%;
+	background-repeat: no-repeat;
+	background-origin: content-box;
 }
 
 #tutorial{

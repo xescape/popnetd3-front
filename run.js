@@ -11,64 +11,136 @@ var multer = require("multer")
 var upload = multer()
 
 var dir = "./data"
-var absdir = "/home/javi/workspace/popnetd3-front/data"
+var absdir = "/var/html/popnetd3-front/data"
 var results = "./results"
 var ids = './ids.txt'
 var baseconfig = './bin/baseconfig.txt'
 var execpath = './popnet/PopNet.py'
+var selfemail = 'popnetd3@gmail.com'
 	
 	
-var cpUpload = upload.fields([{name: 'species', maxCount: 1}, {name: 'format', maxCount: 1}, 
+var cpUpload = upload.fields([{name: 'format', maxCount: 1}, 
 								{name: 'reference', maxCount: 1},{name: 'ival', maxCount: 1},
 								{name: 'pival', maxCount: 1},{name: 'sl', maxCount: 1},
 								{name: 'file', maxCount: 1},{name: 'email', maxCount: 1}])
+var auth = {
+	type: "OAuth2",
+	user: "popnetd3@gmail.com",
+	clientId: "279528384504-ugjngd14851tuc3moplegkkjhguoi0q6.apps.googleusercontent.com",
+	clientSecret: "S66AKE_KliuWvnxd7qDPr-NR",
+
+	// With only refresh token - BAD
+	refreshToken: "1//04zy5Q1syX33vCgYIARAAGAQSNwF-L9IrB_NU63jjy9nurTmyq8VCvUUdCr6MPjLkgcrtKkKdNziIHH8-nVDDdj1UEqsUs2HTUxs",
+
+	// With a fresh access token - OK
+	accessToken: "ya29.a0AfH6SMD8rdGx6tOP-8Mz-zQIRZ1D23v0QdVmhLWROrCMEJlikCaDAcPkyw47HIbrjbTZ16cAIbLGvvXvbdz9IVBneq6jsUh1EENu0moKrX6YT-knoXHRSchZ7hAb6KBC79kGl3uQZ7qxGKoR6RcaxDNzpGzwDSRBzwE",
+
+	// With both accessToken and expires - BAD 
+	expires: 3599,
 	
+}
+var transporter = nodemailer.createTransport({
+	host: 'smtp.gmail.com',
+	port: 465,
+	secure: true,
+	auth: auth,
+	logger: false,
+	debug: false
+})
+								
 router.post('/run', cpUpload, run)
 
 function run(req, res){
-	
-	if(!fs.existsSync(dir)){
-		fs.mkdirSync(dir)
-	}
-	
-	if(!fs.existsSync(ids)){
-		fs.writeFileSync(ids, "")
-	}
-	
-	if(!fs.existsSync(res)){
-		fs.writeFileSync(ids, "")
-	}
-	
-	var id = makeid(8),
-		config = req.body,
-		data = req.files.file[0],
-		folderpath = dir + "/" + id,
-		absfolderpath = absdir + '/' + id,
-		filepath = folderpath + ".tsv",
-		configpath = folderpath + "_config.txt"
-	
-	console.log('Initiated job ' + id)	
-	
-	fs.appendFileSync(ids, id + "," + data.originalname + "\n", encoding='utf8')
-	fs.writeFileSync(filepath, data.buffer, 'utf-8')
-	makeConfig(config, id, absfolderpath, configpath)
-	
-	console.log("python3 " + execpath + " " + configpath)
-	
-	res.send('received.')
-	exec("python3 " + execpath + " " + configpath, function(stdout, stederr){
+	try {
+		if(!fs.existsSync(dir)){
+			fs.mkdirSync(dir)
+		}
 		
-		var oldpath = folderpath + "/cytoscape/graph.json"
-		var newpath = results + "/" + id + ".json"
-		fs.rename(oldpath, newpath, function(){
-			console.log("Job " + id + " complete.")
+		if(!fs.existsSync(ids)){
+			fs.writeFileSync(ids, "")
+		}
+		
+		if(!fs.existsSync(res)){
+			fs.writeFileSync(ids, "")
+		}
+		
+		var id = makeid(8),
+			config = req.body,
+			data = req.files.file[0],
+			folderpath = dir + "/" + id,
+			absfolderpath = absdir + '/' + id,
+			filepath = folderpath + ".tsv",
+			configpath = folderpath + "_config.txt"
+			errorpath = folderpath + "_error.txt"
+		
+		console.log('Initiated job ' + id)	
+		
+		fs.appendFileSync(ids, id + "," + data.originalname + "\n", encoding='utf8')
+		fs.writeFileSync(filepath, data.buffer, 'utf-8')
+		makeConfig(config, id, absfolderpath, configpath)
+		
+		console.log("python3 " + execpath + " " + configpath)
+		
+		res.send('received.')
+		exec("python3 " + execpath + " " + configpath, {maxBuffer: 1024 * 1024 * 100}, function(error, stdout, stderr){
+
+			if(!error){
+				var oldpath = folderpath + "/" + id + ".json",
+					newpath = results + "/" + id + ".json",
+					oldheatpath = folderpath + "/Heatmaps.pdf",
+					newheatpath = folderpath + `/${id}_metrics.pdf`
+
+				fs.rename(oldpath, newpath, function(){
+					fs.rename(oldheatpath, newheatpath, function(){
+						transporter.sendMail(makeEmail(config.email, id, true, newheatpath), function(err, success){
+							if(err){
+								console.log(`emailing got this error:\n${err.message}`)
+							}
+							if(success){
+								console.log(`email sent to ${config.email}.`)
+							}
+						}) //the last thing is for the error message
+						console.log("Job " + id + " complete.")
+						console.log(`Job ${id} success.`)
+					})
+				
+				})}
+			else{
+				fs.writeFileSync(errorpath, error.message, 'utf-8')
+				transporter.sendMail(makeEmail(config.email, id, false, errorpath), function(err, info){
+					if(err){
+						console.log(`emailing got this error:\n${err}
+						code:${err.code}
+						response:${err.response}
+						responseCode:${err.responseCode}`)
+						console.log(`and this stuff ${info}\n`)
+					}
+					else{
+						console.log('at least the email worked.')
+					}
+				})
+				transporter.sendMail(makeEmail(selfemail, id, false, errorpath), function(err, info){
+					if(err){
+						console.log(`emailing got this error:\n${err}
+						code:${err.code}
+						response:${err.response}
+						responseCode:${err.responseCode}`)
+						console.log(`and this stuff ${info}\n`)
+					}
+					else{
+						console.log('at least the email worked.')
+					}
+				})
+				console.log(`Job ${id} error.`)
+			}
+
+			// console.log('email sent to ' + config['email'])
+			
 		})
-		
-		exec("echo '" + makeEmailMessage(id) + "' | mail -s 'PopNetD3 Job Complete' " + config['email'])
-		
-		console.log('email sent to ' + config['email'])
-		
-	})	
+	} catch (error) {
+		console.log('Run.js got into an error')
+		print(error)
+	}	
 }
 
 function makeid(n) {
@@ -96,36 +168,75 @@ function checkid(id){
 }
 
 function makeConfig(config, id, folderpath, configpath){
+
+	//the base config is a a template literal that takes the various vars here.
+	//the eval function fills it in.
 	
 	base = fs.readFileSync(baseconfig, 'utf-8')
-	var species_map = {
-		'Plasmodium(Default)': 'plasmodium',
-		'Toxoplasma': 'toxoplasma',
-		'Saccharomyces': 'yeast'
-	}
-	var input_map = {
-		'Tabular(Default)': 'tabular',
-		'Nucmer(In Development)': 'nucmer',
-	}
-	
-	var species = species_map[config['species']],
-		format = input_map[config['format']],
-		reference = config['reference'],
+
+	var reference = config['reference'],
 		ival = config['ival'],
 		pival = config['pival'],
 		sl = config['sl'],
+		autogroup = config['autogroup']
+		filename = id + ".tsv",
+		input = absdir + "/" + filename,
 		output = folderpath,
-		dir = absdir,
-		filename = id + ".tsv"
+		email = config['email']
+	
+	if(autogroup==="True"){
+		ival = 4
+		pival = 1.5
+	}
 		
 	fs.writeFileSync(configpath, eval(base), 'utf-8')
 	
 }
 
-function makeEmailMessage(id){
-	
-	return "Hello,\n\nYour PopNet job has completed. Please use the JobID '" + id + "' in the visualization tab of the website to retreive your results.\n\nThank you for using PopNetD3!"
-	
+function makeEmail(target, id, success, attachment){
+
+	var mailOptions = {
+		from: 'popnetd3@gmail.com',
+		to: target
+	}
+
+	if(success){
+		mailOptions.subject = 'PopNetD3 Job Complete'
+		mailOptions.text = `
+Hello,
+
+Your PopNet job has completed. Please use the JobID ${id} in the visualization tab of the website to retreive your results.
+A copy of the clustering metrics is attached. Please refer to the tutorial section on how to use them. 
+
+Thank you for using PopNetD3!
+`
+
+		try{
+			mailOptions.attachments = [{
+				path: attachment}];
+		} catch(error){
+			console.log(`job {id} did not have a heatmap attachment`)
+		}
+		
+	}
+	else{
+		mailOptions.subject = 'PopNetD3 Job Error'
+		mailOptions.text = `
+Hello,
+
+Your PopNet job ran into an error. The job ID was ${id}. Please reply to this email if you require further assistance.
+
+A copy of the error log is attached.
+`
+
+		mailOptions.attachments = [{
+			path: attachment}]
+	}
+
+	console.log(`tried to attach ${attachment}`)
+
+	return mailOptions
+		
 }
 
 module.exports = router
