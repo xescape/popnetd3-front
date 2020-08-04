@@ -30,13 +30,13 @@ var auth = {
 	clientSecret: "S66AKE_KliuWvnxd7qDPr-NR",
 
 	// With only refresh token - BAD
-	refreshToken: "1/Pkwfwwx3IpigB8mtdAGkFp1a8i6HcatZ7j5dtQnr76w",
+	refreshToken: "1//04zy5Q1syX33vCgYIARAAGAQSNwF-L9IrB_NU63jjy9nurTmyq8VCvUUdCr6MPjLkgcrtKkKdNziIHH8-nVDDdj1UEqsUs2HTUxs",
 
 	// With a fresh access token - OK
-	accessToken: "ya29.GlscB1Dht6jPqqLq8Nm_ju5k7cvDcoWp3ZGId1_krLFSRp34rawWxZQoDkGw4LLcpRiak6Pfva6IUfGFqjNn9hKzaGpiSC24gTLmropcjnPneCP573CrEAQItddr",
+	accessToken: "ya29.a0AfH6SMD8rdGx6tOP-8Mz-zQIRZ1D23v0QdVmhLWROrCMEJlikCaDAcPkyw47HIbrjbTZ16cAIbLGvvXvbdz9IVBneq6jsUh1EENu0moKrX6YT-knoXHRSchZ7hAb6KBC79kGl3uQZ7qxGKoR6RcaxDNzpGzwDSRBzwE",
 
 	// With both accessToken and expires - BAD 
-	expires: 1558728453,
+	expires: 3599,
 	
 }
 var transporter = nodemailer.createTransport({
