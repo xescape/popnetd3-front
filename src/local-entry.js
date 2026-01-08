@@ -11,7 +11,7 @@ const bodyParser = require("body-parser");
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(express.static("/d/workspace/popnetd3-front")); // specific to local
+app.use(express.static("./")); // specific to local
 
 app.use("/c", back);
 app.use("/data", run);

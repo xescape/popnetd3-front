@@ -5,6 +5,17 @@ This repository contains the source code for PopNetD3. The PopNetD3 relies on th
 
 Please visit [http://compsysbio.org/popnetd3](http://compsysbio.org/popnetd3) to use the tool.
 
+## Local testing
+
+To install:
+`npm install`
+
+To start local server
+`npm test`
+
+Go to url to see webpage:
+`localhost:3000`
+
 
 
 
