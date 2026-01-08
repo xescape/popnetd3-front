@@ -12,7 +12,7 @@
     "getmdl-select": "^2.0.1",
     "mailcomposer": "^4.0.2",
     "markdown": "^0.5.0",
-    "multer": "^1.4.1",
+    "multer": "^2.0.2",
     "nodemailer": "^6.2.1",
     "nodemailer-smtp-pool": "^2.8.3",
     "nodemailer-smtp-transport": "^2.7.4",
