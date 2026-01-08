@@ -6,3 +6,4 @@ popnet
 popnet/*
 ids.txt
 results
+secrets.json
