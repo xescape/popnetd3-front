@@ -5,10 +5,10 @@
 <title>PopNet in D3</title>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src='lodash.js'></script>
-<script src="pdfkit.js"></script>
-<script src='topdf.js'></script>
-<script src='blob-stream.js'></script>
+<script src='bin/lodash.js'></script>
+<script src="bin/pdfkit.js"></script>
+<script src='bin/topdf.js'></script>
+<script src='bin/blob-stream.js'></script>
 <script src="./node_modules/markdown/lib/markdown.js"></script>
 <link rel="stylesheet" href="index.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
@@ -72,28 +72,7 @@
 	    		<p id = "sub_ins"></p>
 	    		
 	    		<div class = "page-content" id = "config">
-					<div class = "vflex">
-						<!--
-						<div class = "hflex">
-	    					<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label getmdl-select getmdl-select__fix-height entry">
-						    	<input class="mdl-textfield__input" id="species" value="" type="text" readonly>
-						    	<input type="hidden" value="" name="species">
-						    	<i class="mdl-icon-toggle__label material-icons">keyboard_arrow_down</i> 
-					    		<label for="species" class="mdl-textfield__label">Species</label>
-					       		<ul for="species" class="mdl-menu mdl-menu--bottom-left mdl-js-menu">
-					         		<li class="mdl-menu__item" data-val="pla" data-selected="true">Plasmodium(Default)</li>
-					         		<li class="mdl-menu__item" data-val="tox">Toxoplasma</li>
-					         		<li class="mdl-menu__item" data-val="sac">Saccharomyces</li>
-					       		</ul>
-							</div>
-
-						   	<button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored tooltip" id="button-help">
-		    					<i class = 'material-icons' id='help1'>help</i>
-		    					<div class = "mdl-tooltip" for="help1">Affects chromosome name parsing. Choose Plasmodium for all other species.</div>
-		    				</button>
-						</div>
-						-->
-						
+					<div class = "vflex">					
 						<div class = "hflex">						
 							<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label getmdl-select getmdl-select__fix-height entry">
 						   		<input class="mdl-textfield__input" id="input" value="" type="text" readonly>
@@ -142,8 +121,6 @@
 								<div class = "mdl-tooltip" for="help3"> Enter a name only if your input table has a REF column. Otherwise put 'None' </div>
 							</button>
 					  </div>
-						 
-						<!-- <div class = "hflex" style="display:inline-block;height:67px;width:382px;"></div> -->
 					</div>
 		
 		    		<div class = 'vflex'>
@@ -286,8 +263,8 @@
   	</div>
   </main>
 </div>
-<script src="popnetmain.js"></script>
-<script src="helper.js"></script>
-<script src="upload.js"></script>
+<script src="src/popnetmain.js"></script>
+<script src="src/helper.js"></script>
+<script src="src/upload.js"></script>
 </body>
 </html>

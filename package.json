@@ -21,7 +21,8 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "node entry.js"
+    "test": "node src/local-entry.js",
+    "run": "node src/entry.js"
   },
   "repository": {
     "type": "git",
